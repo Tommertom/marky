@@ -82,7 +82,7 @@ ${cssContent}
                         <polyline points="17 8 12 3 7 8"></polyline>
                         <line x1="12" y1="3" x2="12" y2="15"></line>
                     </svg>
-                    Upload
+                    Upload MD
                 </button>
                 <button id="exportBtn" title="Export as HTML file">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -99,7 +99,7 @@ ${cssContent}
                         <polyline points="7 10 12 15 17 10"></polyline>
                         <line x1="12" y1="15" x2="12" y2="3"></line>
                     </svg>
-                    Download
+                    Download MD
                 </button>
                 <button id="copyBtn" title="Copy markdown to clipboard" style="margin-right: 1rem;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
