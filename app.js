@@ -45,8 +45,14 @@ function markdownToHtml(markdown) {
     return md.render(markdown);
 }
 
-exportBtn.addEventListener('click', () => {
+exportBtn.addEventListener('click', async () => {
     const currentContent = editor.innerHTML;
+    
+    const cssResponse = await fetch('styles.css');
+    const cssContent = await cssResponse.text();
+    
+    const jsResponse = await fetch('app.js');
+    const jsContent = await jsResponse.text();
     
     const htmlContent = `<!DOCTYPE html>
 <html lang="en">
@@ -54,7 +60,9 @@ exportBtn.addEventListener('click', () => {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown Editor</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+${cssContent}
+    </style>
 </head>
 <body>
     <div class="container">
@@ -174,7 +182,9 @@ exportBtn.addEventListener('click', () => {
     
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"><\/script>
     <script src="https://cdn.jsdelivr.net/npm/turndown@7.1.2/dist/turndown.min.js"><\/script>
-    <script src="app.js"><\/script>
+    <script>
+${jsContent}
+    <\/script>
 </body>
 </html>`;
     
