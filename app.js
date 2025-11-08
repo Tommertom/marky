@@ -7,6 +7,7 @@ const turndownService = new TurndownService({
 const editor = document.getElementById('editor');
 const downloadBtn = document.getElementById('downloadBtn');
 const uploadBtn = document.getElementById('uploadBtn');
+const pasteBtn = document.getElementById('pasteBtn');
 const fileInput = document.getElementById('fileInput');
 const formatBar = document.getElementById('formatBar');
 
@@ -40,6 +41,18 @@ uploadBtn.addEventListener('click', () => {
     fileInput.click();
 });
 
+pasteBtn.addEventListener('click', async () => {
+    try {
+        const clipboardText = await navigator.clipboard.readText();
+        if (clipboardText && clipboardText.trim()) {
+            const html = markdownToHtml(clipboardText);
+            editor.innerHTML = html;
+        }
+    } catch (err) {
+        alert('Unable to access clipboard. Please grant clipboard permissions.');
+    }
+});
+
 fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -68,18 +81,7 @@ editor.addEventListener('input', () => {
     }, 1000);
 });
 
-window.addEventListener('load', async () => {
-    try {
-        const clipboardText = await navigator.clipboard.readText();
-        if (clipboardText && clipboardText.trim()) {
-            const html = markdownToHtml(clipboardText);
-            editor.innerHTML = html;
-            return;
-        }
-    } catch (err) {
-        console.log('Clipboard access not available or denied');
-    }
-    
+window.addEventListener('load', () => {
     const saved = localStorage.getItem('markdownContent');
     if (saved && saved !== initialContent) {
         editor.innerHTML = saved;
