@@ -21,6 +21,7 @@ const defaultContent = `<h1>👋 Welcome to Marky - Your Markdown Editor</h1>
 <li><strong>Auto-save</strong> - Never lose your work</li>
 <li><strong>Format toolbar</strong> - Select text to see formatting options</li>
 <li><strong>Import/Export</strong> - Upload and download markdown files</li>
+<li><strong>Copy to clipboard</strong> - Instantly copy your markdown</li>
 </ul>
 <h2>⌨️ Keyboard Shortcuts</h2>
 <ul>
@@ -29,7 +30,7 @@ const defaultContent = `<h1>👋 Welcome to Marky - Your Markdown Editor</h1>
 </ul>
 <h2>🚀 Quick Tips</h2>
 <p>Select any text to reveal the <strong>formatting toolbar</strong> above. Use it to change headings, add <em>emphasis</em>, create lists, or insert code blocks.</p>
-<p>Click the <strong>Clear</strong> button to start fresh, or <strong>Upload</strong> to load an existing markdown file.</p>
+<p>Click <strong>Copy</strong> to copy your markdown to the clipboard, or <strong>Clear</strong> to start fresh.</p>
 <p>Happy writing! 📝</p>`;
 
 let initialContent = editor.innerHTML;
