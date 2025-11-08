@@ -22,7 +22,7 @@ A powerful, privacy-focused WYSIWYG markdown editor that runs entirely in your b
 ### 💾 Export Your Work
 - **Download as Markdown** - Save your work as a `.md` file
 - **Copy to Clipboard** - Instantly copy all your markdown with one click
-- **Export as HTML** - Generate a standalone HTML file with your content
+- **Export as HTML** - Generate standalone, shareable HTML files for review and collaboration workflows. Perfect for sharing specs with stakeholders who need to review and provide feedback without a markdown editor
 
 ### 🎨 What You Can Format
 - **Headings** (H1, H2, H3) - Organize your content with hierarchy
@@ -48,6 +48,7 @@ Make your workflow even faster:
 - ✍️ Drafting blog posts in markdown
 - 📊 Creating technical documentation
 - 🎓 Academic writing and research notes
+- 🤖 **Spec-Driven AI Development** - Ideal workflow for AI-assisted engineering: create specs, export as HTML for stakeholder review, receive feedback as markdown, then seamlessly incorporate returned `.md` files back into your AI development workflow
 
 ## 🔒 Privacy & Features
 
@@ -82,7 +83,7 @@ Unlike other markdown editors:
 - Use the "Paste MD" button to quickly load markdown from anywhere
 - Your work auto-saves - but download important files as a backup
 - Click "Clear" to start fresh with a new document
-- Export as HTML to create standalone documents you can share
+- **HTML Export Workflow**: Export specs as HTML for non-technical reviewers, who can then provide feedback. Re-import their markdown responses to continue your AI-assisted development cycle without format friction
 
 ## 🤝 For Developers
 
