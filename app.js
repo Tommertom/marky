@@ -13,7 +13,7 @@ const copyBtn = document.getElementById('copyBtn');
 const fileInput = document.getElementById('fileInput');
 const formatBar = document.getElementById('formatBar');
 
-const defaultContent = `<h1>👋 Welcome to Marky - Your Markdown Editor</h1>
+const defaultContent = `<h1>👋 Welcome to Marky - Your Simple Markdown Editor</h1>
 <p>Start editing this document right away. Your changes are automatically saved and rendered in real-time!</p>
 <h2>✨ Features</h2>
 <ul>
