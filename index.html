@@ -97,10 +97,14 @@
         padding: 2rem;
         min-height: calc(100vh - 80px);
         outline: none;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        margin: 1rem;
       }
 
       #editor:focus {
         background: #fafafa;
+        border-color: #d0d0d0;
       }
 
       #editor h1 {
@@ -389,7 +393,7 @@
   <body>
     <div class="container">
       <div class="toolbar">
-        <h1>Markdown Editor</h1>
+        <h1>Marky Markdown Editor</h1>
         <div class="buttons">
           <button id="pasteBtn" title="Paste from clipboard">
             <svg
@@ -920,8 +924,8 @@ ${jsContent}
             "Are you sure you want to clear the document? This will remove all content and auto-saved data."
           )
         ) {
-          localStorage.removeItem("markdownContent");
           editor.innerHTML = "<p><br></p>";
+          localStorage.setItem("markdownContent", editor.innerHTML);
           editor.focus();
           const range = document.createRange();
           const sel = window.getSelection();
@@ -984,15 +988,9 @@ ${jsContent}
       });
 
       window.addEventListener("load", () => {
-        const currentContent = editor.innerHTML.trim();
-        if (currentContent && currentContent !== "") {
-          return;
-        }
         const saved = localStorage.getItem("markdownContent");
         if (saved) {
           editor.innerHTML = saved;
-        } else {
-          editor.innerHTML = defaultContent;
         }
       });
 
