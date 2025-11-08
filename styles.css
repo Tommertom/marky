@@ -80,6 +80,10 @@ button:active {
     height: 40px;
 }
 
+#githubBtn svg {
+    fill: white;
+}
+
 #githubBtn:hover {
     background: #2980b9;
 }
