@@ -91,7 +91,7 @@ ${cssContent}
                         <line x1="12" y1="18" x2="12" y2="12"></line>
                         <line x1="9" y1="15" x2="15" y2="15"></line>
                     </svg>
-                    Export
+                    Export HTML
                 </button>
                 <button id="downloadBtn" title="Download as markdown (Ctrl+S)">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
