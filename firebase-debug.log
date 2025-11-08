@@ -1,0 +1,16 @@
+[debug] [2025-11-08T19:57:20.324Z] ----------------------------------------------------------------------
+[debug] [2025-11-08T19:57:20.327Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\gruin\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2025-11-08T19:57:20.328Z] CLI Version:   14.8.0
+[debug] [2025-11-08T19:57:20.328Z] Platform:      win32
+[debug] [2025-11-08T19:57:20.328Z] Node Version:  v22.17.0
+[debug] [2025-11-08T19:57:20.328Z] Time:          Sat Nov 08 2025 20:57:20 GMT+0100 (Central European Standard Time)
+[debug] [2025-11-08T19:57:20.328Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-11-08T19:57:20.488Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-11-08T19:57:20.488Z] > authorizing via signed-in user (dealerdirect2025@gmail.com)
+[debug] [2025-11-08T19:57:20.488Z] [iam] checking project marky-md for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-11-08T19:57:20.489Z] Checked if tokens are valid: true, expires at: 1762634348653
+[debug] [2025-11-08T19:57:20.490Z] Checked if tokens are valid: true, expires at: 1762634348653
+[debug] [2025-11-08T19:57:20.490Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/marky-md:testIamPermissions [none]
+[debug] [2025-11-08T19:57:20.490Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/marky-md:testIamPermissions x-goog-quota-user=projects/marky-md
+[debug] [2025-11-08T19:57:20.490Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/marky-md:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
