@@ -2,6 +2,8 @@
 
 A powerful, privacy-focused WYSIWYG markdown editor that runs entirely in your browser. No installation, no sign-up, no data sent to servers - everything stays on your device!
 
+**The ultimate tool for spec-driven AI development workflows.** Marky transforms AI-generated markdown specs into visual, editable, and shareable documents - making collaboration with stakeholders seamless. Edit specs visually, export as HTML for review, and import feedback as markdown to keep your AI development flow smooth and efficient.
+
 ## 🚀 Try It Now
 
 **[Launch Marky Editor](https://marky-md.web.app/)** - Start editing markdown instantly!
