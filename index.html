@@ -634,6 +634,25 @@
 
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/turndown@7.1.2/dist/turndown.min.js"></script>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCyOHh6FOPfP4kqZaJbMdi4s4xRMxlGvyY",
+        authDomain: "marky-md.firebaseapp.com",
+        projectId: "marky-md",
+        storageBucket: "marky-md.firebasestorage.app",
+        messagingSenderId: "1054837711553",
+        appId: "1:1054837711553:web:4b2b66b43f809cf1ccea40",
+        measurementId: "G-LKKJ3L4DH4",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+    </script>
+
     <script id="app-script">
       const md = window.markdownit();
       const turndownService = new TurndownService({
