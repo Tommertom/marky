@@ -64,6 +64,30 @@ button:active {
     transform: translateY(1px);
 }
 
+#githubBtn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: background 0.2s;
+    width: 40px;
+    height: 40px;
+}
+
+#githubBtn:hover {
+    background: #2980b9;
+}
+
+#githubBtn:active {
+    transform: translateY(1px);
+}
+
 #editor {
     padding: 2rem;
     min-height: calc(100vh - 80px);
