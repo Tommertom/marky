@@ -9,6 +9,7 @@ const downloadBtn = document.getElementById('downloadBtn');
 const uploadBtn = document.getElementById('uploadBtn');
 const pasteBtn = document.getElementById('pasteBtn');
 const clearBtn = document.getElementById('clearBtn');
+const copyBtn = document.getElementById('copyBtn');
 const fileInput = document.getElementById('fileInput');
 const formatBar = document.getElementById('formatBar');
 
@@ -59,6 +60,25 @@ downloadBtn.addEventListener('click', () => {
 
 uploadBtn.addEventListener('click', () => {
     fileInput.click();
+});
+
+copyBtn.addEventListener('click', async () => {
+    const html = editor.innerHTML;
+    const markdown = htmlToMarkdown(html);
+    
+    try {
+        await navigator.clipboard.writeText(markdown);
+        const originalText = copyBtn.innerHTML;
+        copyBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        Copied!`;
+        setTimeout(() => {
+            copyBtn.innerHTML = originalText;
+        }, 2000);
+    } catch (err) {
+        alert('Unable to copy to clipboard. Please grant clipboard permissions.');
+    }
 });
 
 clearBtn.addEventListener('click', () => {
