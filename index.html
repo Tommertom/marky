@@ -938,6 +938,7 @@ ${jsContent}
           if (clipboardText && clipboardText.trim()) {
             const html = markdownToHtml(clipboardText);
             editor.innerHTML = html;
+            localStorage.setItem("markdownContent", editor.innerHTML);
           }
         } catch (err) {
           alert(
@@ -955,6 +956,7 @@ ${jsContent}
           const markdown = event.target.result;
           const html = markdownToHtml(markdown);
           editor.innerHTML = html;
+          localStorage.setItem("markdownContent", editor.innerHTML);
         };
         reader.readAsText(file);
         fileInput.value = "";
