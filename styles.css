@@ -291,6 +291,7 @@ button:active {
         gap: 0.3rem;
         flex: 1 1 auto;
         min-width: fit-content;
+        max-width: 120px;
     }
 
     button svg {
@@ -346,6 +347,7 @@ button:active {
         font-size: 0;
         padding: 0.5rem;
         min-width: 40px;
+        max-width: 50px;
         justify-content: center;
     }
 
