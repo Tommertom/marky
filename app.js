@@ -11,6 +11,17 @@ const pasteBtn = document.getElementById('pasteBtn');
 const fileInput = document.getElementById('fileInput');
 const formatBar = document.getElementById('formatBar');
 
+const defaultContent = `<h1>Welcome to Markdown Editor</h1>
+<p>Start editing this document. Your changes are rendered in real-time.</p>
+<h2>Features</h2>
+<ul>
+<li>WYSIWYG editing</li>
+<li>Upload markdown files</li>
+<li>Download as markdown</li>
+<li>Auto-save to localStorage</li>
+</ul>
+<p><strong>Select text</strong> to see formatting options appear above!</p>`;
+
 let initialContent = editor.innerHTML;
 let currentSelection = null;
 
@@ -83,8 +94,10 @@ editor.addEventListener('input', () => {
 
 window.addEventListener('load', () => {
     const saved = localStorage.getItem('markdownContent');
-    if (saved && saved !== initialContent) {
+    if (saved) {
         editor.innerHTML = saved;
+    } else {
+        editor.innerHTML = defaultContent;
     }
 });
 
