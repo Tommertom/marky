@@ -31,6 +31,11 @@ A simple, free, and powerful WYSIWYG (What You See Is What You Get) markdown edi
 4. **See results instantly** - The preview updates as you type
 5. **Save your work** - Click Download to export as a .md file, or your work auto-saves in the browser
 
+## Keyboard Shortcuts
+
+- **Ctrl+S** (or Cmd+S on Mac) - Download your markdown file
+- **Ctrl+O** (or Cmd+O on Mac) - Open/upload a markdown file
+
 ## Why Use Marky?
 
 - No account or sign-up needed

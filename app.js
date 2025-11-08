@@ -8,19 +8,28 @@ const editor = document.getElementById('editor');
 const downloadBtn = document.getElementById('downloadBtn');
 const uploadBtn = document.getElementById('uploadBtn');
 const pasteBtn = document.getElementById('pasteBtn');
+const clearBtn = document.getElementById('clearBtn');
 const fileInput = document.getElementById('fileInput');
 const formatBar = document.getElementById('formatBar');
 
-const defaultContent = `<h1>Welcome to Markdown Editor</h1>
-<p>Start editing this document. Your changes are rendered in real-time.</p>
-<h2>Features</h2>
+const defaultContent = `<h1>👋 Welcome to Marky - Your Markdown Editor</h1>
+<p>Start editing this document right away. Your changes are automatically saved and rendered in real-time!</p>
+<h2>✨ Features</h2>
 <ul>
-<li>WYSIWYG editing</li>
-<li>Upload markdown files</li>
-<li>Download as markdown</li>
-<li>Auto-save to localStorage</li>
+<li><strong>WYSIWYG editing</strong> - What you see is what you get</li>
+<li><strong>Auto-save</strong> - Never lose your work</li>
+<li><strong>Format toolbar</strong> - Select text to see formatting options</li>
+<li><strong>Import/Export</strong> - Upload and download markdown files</li>
 </ul>
-<p><strong>Select text</strong> to see formatting options appear above!</p>`;
+<h2>⌨️ Keyboard Shortcuts</h2>
+<ul>
+<li><strong>Ctrl+S</strong> (Cmd+S on Mac) - Download your markdown</li>
+<li><strong>Ctrl+O</strong> (Cmd+O on Mac) - Upload a markdown file</li>
+</ul>
+<h2>🚀 Quick Tips</h2>
+<p>Select any text to reveal the <strong>formatting toolbar</strong> above. Use it to change headings, add <em>emphasis</em>, create lists, or insert code blocks.</p>
+<p>Click the <strong>Clear</strong> button to start fresh, or <strong>Upload</strong> to load an existing markdown file.</p>
+<p>Happy writing! 📝</p>`;
 
 let initialContent = editor.innerHTML;
 let currentSelection = null;
@@ -50,6 +59,14 @@ downloadBtn.addEventListener('click', () => {
 
 uploadBtn.addEventListener('click', () => {
     fileInput.click();
+});
+
+clearBtn.addEventListener('click', () => {
+    if (confirm('Are you sure you want to clear the document? This will remove all content and auto-saved data.')) {
+        localStorage.removeItem('markdownContent');
+        editor.innerHTML = '';
+        editor.focus();
+    }
 });
 
 pasteBtn.addEventListener('click', async () => {
