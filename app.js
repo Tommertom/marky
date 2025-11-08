@@ -124,8 +124,15 @@ fileInput.addEventListener('change', (e) => {
 
 editor.addEventListener('paste', (e) => {
     e.preventDefault();
+    
+    const html = e.clipboardData.getData('text/html');
     const text = e.clipboardData.getData('text/plain');
-    document.execCommand('insertText', false, text);
+    
+    if (html && html.trim()) {
+        document.execCommand('insertHTML', false, html);
+    } else if (text && text.trim()) {
+        document.execCommand('insertText', false, text);
+    }
 });
 
 let saveTimer;
