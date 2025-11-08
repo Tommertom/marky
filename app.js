@@ -64,8 +64,14 @@ uploadBtn.addEventListener('click', () => {
 clearBtn.addEventListener('click', () => {
     if (confirm('Are you sure you want to clear the document? This will remove all content and auto-saved data.')) {
         localStorage.removeItem('markdownContent');
-        editor.innerHTML = '';
+        editor.innerHTML = '<p><br></p>';
         editor.focus();
+        const range = document.createRange();
+        const sel = window.getSelection();
+        range.setStart(editor.firstChild, 0);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
     }
 });
 
