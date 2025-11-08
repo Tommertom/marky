@@ -609,18 +609,38 @@
       </div>
 
       <div id="editor" contenteditable="true" spellcheck="true">
-        <h1>Welcome to Markdown Editor</h1>
+        <h1>👋 Welcome to Marky</h1>
         <p>
-          Start editing this document. Your changes are rendered in real-time.
+          A simple, privacy-focused markdown editor. Start typing and see your
+          formatted text in real-time!
         </p>
-        <h2>Features</h2>
+        <h2>✨ Quick Start</h2>
         <ul>
-          <li>WYSIWYG editing</li>
-          <li>Upload markdown files</li>
-          <li>Download as markdown</li>
+          <li>
+            <strong>Select text</strong> to see formatting options appear above
+          </li>
+          <li><strong>Paste MD</strong> - Load markdown from your clipboard</li>
+          <li><strong>Upload MD</strong> - Import existing markdown files</li>
+          <li>
+            <strong>Download MD</strong> - Save your work (or press
+            <strong>Ctrl+S</strong>)
+          </li>
+          <li><strong>Copy MD</strong> - Copy to clipboard instantly</li>
+          <li><strong>Export HTML</strong> - Generate standalone HTML files</li>
         </ul>
+        <h2>⌨️ Keyboard Shortcuts</h2>
+        <ul>
+          <li><strong>Ctrl+S</strong> (Cmd+S on Mac) - Download markdown</li>
+          <li><strong>Ctrl+O</strong> (Cmd+O on Mac) - Upload file</li>
+        </ul>
+        <h2>🔒 Privacy First</h2>
         <p>
-          <strong>Select text</strong> to see formatting options appear above!
+          Everything happens in your browser. No data is sent to servers. Your
+          work auto-saves locally every second.
+        </p>
+        <p>
+          <strong>Ready to write?</strong> Click "Clear" to start with a blank
+          document, or just start typing!
         </p>
       </div>
     </div>
@@ -670,25 +690,25 @@
       const fileInput = document.getElementById("fileInput");
       const formatBar = document.getElementById("formatBar");
 
-      const defaultContent = `<h1>👋 Welcome to Marky - Your Simple Markdown Editor</h1>
-<p>Start editing this document right away. Your changes are automatically saved and rendered in real-time!</p>
-<h2>✨ Features</h2>
+      const defaultContent = `<h1>👋 Welcome to Marky</h1>
+<p>A simple, privacy-focused markdown editor. Start typing and see your formatted text in real-time!</p>
+<h2>✨ Quick Start</h2>
 <ul>
-<li><strong>WYSIWYG editing</strong> - What you see is what you get</li>
-<li><strong>Auto-save</strong> - Never lose your work</li>
-<li><strong>Format toolbar</strong> - Select text to see formatting options</li>
-<li><strong>Import/Export</strong> - Upload and download markdown files</li>
-<li><strong>Copy to clipboard</strong> - Instantly copy your markdown</li>
+<li><strong>Select text</strong> to see formatting options appear above</li>
+<li><strong>Paste MD</strong> - Load markdown from your clipboard</li>
+<li><strong>Upload MD</strong> - Import existing markdown files</li>
+<li><strong>Download MD</strong> - Save your work (or press <strong>Ctrl+S</strong>)</li>
+<li><strong>Copy MD</strong> - Copy to clipboard instantly</li>
+<li><strong>Export HTML</strong> - Generate standalone HTML files</li>
 </ul>
 <h2>⌨️ Keyboard Shortcuts</h2>
 <ul>
-<li><strong>Ctrl+S</strong> (Cmd+S on Mac) - Download your markdown</li>
-<li><strong>Ctrl+O</strong> (Cmd+O on Mac) - Upload a markdown file</li>
+<li><strong>Ctrl+S</strong> (Cmd+S on Mac) - Download markdown</li>
+<li><strong>Ctrl+O</strong> (Cmd+O on Mac) - Upload file</li>
 </ul>
-<h2>🚀 Quick Tips</h2>
-<p>Select any text to reveal the <strong>formatting toolbar</strong> above. Use it to change headings, add <em>emphasis</em>, create lists, or insert code blocks.</p>
-<p>Click <strong>Copy</strong> to copy your markdown to the clipboard, or <strong>Clear</strong> to start fresh.</p>
-<p>Happy writing! 📝</p>`;
+<h2>� Privacy First</h2>
+<p>Everything happens in your browser. No data is sent to servers. Your work auto-saves locally every second.</p>
+<p><strong>Ready to write?</strong> Click "Clear" to start with a blank document, or just start typing!</p>`;
 
       let initialContent = editor.innerHTML;
       let currentSelection = null;
