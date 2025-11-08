@@ -9,24 +9,27 @@ A simple, free, and powerful WYSIWYG (What You See Is What You Get) markdown edi
 ## Features
 
 - **Real-time WYSIWYG editing** - See your formatted markdown as you type
+- **Paste from clipboard** - Quick paste button to load markdown from your clipboard
+- **Upload & Download** - Import markdown files or export your work
 - **Live preview** - Instantly see how your markdown will render
 - **100% free and open source** - No subscriptions, no fees, ever
 - **Privacy-focused** - All editing happens locally in your browser
 - **Clean and simple interface** - Focus on your content, not the tools
-- **Export ready** - Copy your markdown and use it anywhere
+- **Auto-save** - Your work is automatically saved to your browser
 
 ## How to Use
 
 1. **Start writing** - Simply open the editor and start typing
-2. **Format your text** - Use the toolbar buttons or standard markdown syntax:
+2. **Paste from clipboard** - Click the Paste button to load markdown text from your clipboard
+3. **Format your text** - Select text to see formatting options, or use standard markdown syntax:
    - `# Heading` for headings
    - `**bold**` for **bold text**
    - `*italic*` for *italic text*
    - `- item` for bullet lists
    - `` `code` `` for inline code
    - And more!
-3. **See results instantly** - The preview updates as you type
-4. **Copy your markdown** - When finished, copy the markdown text to use in your projects
+4. **See results instantly** - The preview updates as you type
+5. **Save your work** - Click Download to export as a .md file, or your work auto-saves in the browser
 
 ## Why Use Marky?
 
