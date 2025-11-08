@@ -1,4 +1,4 @@
 .github
 .firebaserc
-.firebase/
+.firebase/*
 
