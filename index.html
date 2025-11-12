@@ -633,6 +633,70 @@
           font-size: 1rem;
         }
       }
+
+      /* ========================================
+         Print/PDF Export Styles
+         Force light mode and clean layout
+         ======================================== */
+      @media print {
+        body {
+          background: #ffffff !important;
+          color: #333333 !important;
+        }
+
+        #editor {
+          background: #ffffff !important;
+          color: #333333 !important;
+          border: none !important;
+          margin: 0 !important;
+          padding: 2rem !important;
+          min-height: auto !important;
+        }
+
+        #editor h1 {
+          color: #2c3e50 !important;
+          border-bottom-color: #eeeeee !important;
+        }
+
+        #editor h2,
+        #editor h3 {
+          color: #34495e !important;
+        }
+
+        #editor blockquote {
+          border-left-color: #3498db !important;
+        }
+
+        #editor code {
+          background: #f4f4f4 !important;
+          color: #c7254e !important;
+        }
+
+        #editor pre {
+          background: #f4f4f4 !important;
+        }
+
+        #editor pre code {
+          color: #333333 !important;
+        }
+
+        #editor a {
+          color: #3498db !important;
+        }
+
+        #editor table {
+          border-color: #ddd !important;
+        }
+
+        #editor th,
+        #editor td {
+          border-color: #ddd !important;
+        }
+
+        #editor th {
+          background: #f5f5f5 !important;
+        }
+      }
     </style>
   </head>
   <body>
@@ -897,7 +961,7 @@
       <div id="editor" contenteditable="true" spellcheck="true">
         <h1>👋 Welcome to Marky</h1>
         <p>
-          A simple, privacy-focused markdown editor. Start typing and see your
+          A simple markdown editor that runs in your browser. Start typing and see your
           formatted text in real-time!
         </p>
         <h2>✨ Quick Start</h2>
@@ -912,7 +976,7 @@
             <strong>Ctrl+S</strong>)
           </li>
           <li><strong>Copy MD</strong> - Copy to clipboard instantly</li>
-          <li><strong>Export HTML</strong> - Generate standalone HTML files</li>
+          <li><strong>Export HTML</strong> - Generate editable HTML files that anyone can modify and return to you!</li>
         </ul>
         <h2>⌨️ Keyboard Shortcuts</h2>
         <ul>
@@ -924,10 +988,11 @@
             <strong>Ctrl+Shift+Z</strong> (Cmd+Shift+Z on Mac) - Redo
           </li>
         </ul>
-        <h2>🔒 Privacy First</h2>
+        <h2>🔄 Collaborative Workflow</h2>
         <p>
-          Everything happens in your browser. No data is sent to servers. Your
-          work auto-saves locally every second.
+          Export as HTML to share editable documents. Recipients can open the HTML file
+          in any browser, make their edits, save, and send it back to you. No markdown
+          knowledge required! All editing happens locally - no data sent to servers.
         </p>
         <p>
           <strong>Ready to write?</strong> Click "Clear" to start with a blank
@@ -983,7 +1048,7 @@
       const formatBar = document.getElementById("formatBar");
 
       const defaultContent = `<h1>👋 Welcome to Marky</h1>
-<p>A simple, privacy-focused markdown editor. Start typing and see your formatted text in real-time!</p>
+<p>A simple markdown editor that runs in your browser. Start typing and see your formatted text in real-time!</p>
 <h2>✨ Quick Start</h2>
 <ul>
 <li><strong>Select text</strong> to see formatting options appear above</li>
@@ -991,7 +1056,7 @@
 <li><strong>Upload MD</strong> - Import existing markdown files</li>
 <li><strong>Download MD</strong> - Save your work (or press <strong>Ctrl+S</strong>)</li>
 <li><strong>Copy MD</strong> - Copy to clipboard instantly</li>
-<li><strong>Export HTML</strong> - Generate standalone HTML files</li>
+<li><strong>Export HTML</strong> - Generate editable HTML files that anyone can modify and return to you!</li>
 </ul>
 <h2>⌨️ Keyboard Shortcuts</h2>
 <ul>
@@ -1000,8 +1065,8 @@
 <li><strong>Ctrl+Z</strong> (Cmd+Z on Mac) - Undo</li>
 <li><strong>Ctrl+Y</strong> or <strong>Ctrl+Shift+Z</strong> (Cmd+Shift+Z on Mac) - Redo</li>
 </ul>
-<h2>🔒 Privacy First</h2>
-<p>Everything happens in your browser. No data is sent to servers. Your work auto-saves locally every second.</p>
+<h2>🔄 Collaborative Workflow</h2>
+<p>Export as HTML to share editable documents. Recipients can open the HTML file in any browser, make their edits, save, and send it back to you. No markdown knowledge required! All editing happens locally - no data sent to servers.</p>
 <p><strong>Ready to write?</strong> Click "Clear" to start with a blank document, or just start typing!</p>`;
 
       let initialContent = editor.innerHTML;
@@ -1119,13 +1184,26 @@
         const element = editor.cloneNode(true);
         const filename = generatePDFFilename();
 
+        // Apply light mode styles to cloned element
+        element.style.background = "#ffffff";
+        element.style.color = "#333333";
+        element.style.border = "none";
+        element.style.margin = "0";
+        element.style.padding = "2rem";
+
         const warnings = await processImages(element);
 
         const options = {
           margin: 10,
           filename: filename,
           image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0 },
+          html2canvas: { 
+            scale: 2, 
+            useCORS: true, 
+            scrollX: 0, 
+            scrollY: 0,
+            backgroundColor: "#ffffff"
+          },
           jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
         };
 

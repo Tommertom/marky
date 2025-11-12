@@ -1,8 +1,8 @@
 # 📝 Marky - Simple & Free Markdown Editor
 
-A powerful, privacy-focused WYSIWYG markdown editor that runs entirely in your browser. No installation, no sign-up, no data sent to servers - everything stays on your device!
+A powerful WYSIWYG markdown editor that runs entirely in your browser. No installation, no sign-up required!
 
-**The ultimate tool for spec-driven AI development workflows.** Marky transforms AI-generated markdown specs into visual, editable, and shareable documents - making collaboration with stakeholders seamless. Edit specs visually, export as HTML for review, and import feedback as markdown to keep your AI development flow smooth and efficient.
+**The ultimate tool for collaborative document workflows.** Marky lets you create markdown documents and export them as **fully editable HTML files** that anyone can modify and return to you. Perfect for spec-driven AI development, stakeholder reviews, and collaborative editing - share HTML exports with colleagues who can edit and send back their changes as markdown.
 
 ## 🚀 Try It Now
 
@@ -25,8 +25,8 @@ A powerful, privacy-focused WYSIWYG markdown editor that runs entirely in your b
 ### 💾 Export Your Work
 - **Download as Markdown** - Save your work as a `.md` file
 - **Copy to Clipboard** - Instantly copy all your markdown with one click
-- **Export as HTML** - Generate standalone, shareable HTML files for review and collaboration workflows. Perfect for sharing specs with stakeholders who need to review and provide feedback without a markdown editor
-- **Export as PDF** - Generate professional PDF documents with one click. Images are automatically optimized to ensure reasonable file sizes while maintaining quality
+- **Export as HTML** - Generate standalone, **fully editable** HTML files that recipients can modify and send back. Perfect for collaborative workflows - they can edit the HTML directly in their browser, make changes, and return it to you as markdown!
+- **Export as PDF** - Generate professional, print-ready PDF documents with one click. Images are automatically optimized to ensure reasonable file sizes while maintaining quality
 
 ### 🎨 What You Can Format
 - **Headings** (H1, H2, H3) - Organize your content with hierarchy
@@ -55,14 +55,15 @@ Make your workflow even faster:
 - ✍️ Drafting blog posts in markdown
 - 📊 Creating technical documentation
 - 🎓 Academic writing and research notes
-- 🤖 **Spec-Driven AI Development** - Ideal workflow for AI-assisted engineering: create specs, export as HTML for stakeholder review, receive feedback as markdown, then seamlessly incorporate returned `.md` files back into your AI development workflow
+- 🤖 **Collaborative Workflows** - Export as editable HTML, share with colleagues who can make changes directly in their browser, then receive their edits back as markdown
+- 🔄 **Spec-Driven AI Development** - Create specs, export as editable HTML for stakeholder review and editing, receive their modified versions back, and seamlessly continue your AI development workflow
 
-## 🔒 Privacy & Features
+## ✨ Features
 
-- ✅ **100% Private** - All editing happens locally in your browser
+- ✅ **Editable HTML Exports** - Recipients can edit exported HTML files and send changes back
 - ✅ **No Account Required** - Start using immediately
 - ✅ **Works Offline** - After first load, works without internet
-- ✅ **No Data Collection** - We don't track or store your content
+- ✅ **No Data Sent to Servers** - All editing happens locally in your browser
 - ✅ **Free Forever** - No subscriptions, no hidden fees
 - ✅ **Open Source** - Transparent and community-driven
 - ✅ **Dark Mode** - Automatic theme switching based on system preference, with manual override
@@ -79,11 +80,12 @@ That's it! No tutorials needed.
 ## 🌟 Why Marky?
 
 Unlike other markdown editors:
+- **Editable HTML exports** - Share documents that recipients can modify and return
 - No complicated split-pane views - just pure WYSIWYG
 - No account creation or login required
 - Completely self-contained - one HTML file does it all
 - Lightning fast - no server roundtrips
-- Your data never leaves your device
+- Your markdown data never leaves your device
 
 ## 💡 Pro Tips
 
@@ -92,7 +94,7 @@ Unlike other markdown editors:
 - Your work auto-saves to localStorage - but download important files as a backup
 - Click "Clear" to start fresh with a new document
 - Toggle dark mode in the toolbar or let it automatically match your system theme
-- **HTML Export Workflow**: Export specs as HTML for non-technical reviewers, who can then provide feedback. Re-import their markdown responses to continue your AI-assisted development cycle without format friction
+- **Collaborative HTML Workflow**: Export as HTML and share with colleagues. They can open it in any browser, edit the content directly, save their changes, and send the modified HTML back to you. You can then extract their changes as markdown!
 
 ## 🤝 For Developers
 
