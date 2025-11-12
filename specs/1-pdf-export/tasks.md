@@ -30,9 +30,9 @@ This document provides a complete, step-by-step task breakdown for implementing 
 
 ### Setup Tasks
 
-- [ ] T001 Verify html2pdf.js library documentation and CDN availability at https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/
-- [ ] T002 Create feature branch `1-pdf-export` from main (if not already on it)
-- [ ] T003 Add html2pdf.js CDN script tag in index.html before closing `</body>` tag
+- [x] T001 Verify html2pdf.js library documentation and CDN availability at https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/
+- [x] T002 Create feature branch `1-pdf-export` from main (if not already on it)
+- [x] T003 Add html2pdf.js CDN script tag in index.html before closing `</body>` tag
 
 **Acceptance Criteria**:
 - html2pdf.js library loads successfully
@@ -47,11 +47,11 @@ This document provides a complete, step-by-step task breakdown for implementing 
 
 ### Infrastructure Tasks
 
-- [ ] T004 [P] Add PDF button HTML to toolbar in index.html after "Export HTML" button
-- [ ] T005 [P] Add PDF icon SVG markup to button element in index.html
-- [ ] T006 [P] Add loading indicator span element to PDF button in index.html
-- [ ] T007 Add CSS styles for PDF button hover/active/disabled states in index.html `<style>` block
-- [ ] T008 Add CSS styles for loading indicator animation in index.html `<style>` block
+- [x] T004 [P] Add PDF button HTML to toolbar in index.html after "Export HTML" button
+- [x] T005 [P] Add PDF icon SVG markup to button element in index.html
+- [x] T006 [P] Add loading indicator span element to PDF button in index.html
+- [x] T007 Add CSS styles for PDF button hover/active/disabled states in index.html `<style>` block
+- [x] T008 Add CSS styles for loading indicator animation in index.html `<style>` block
 
 **Acceptance Criteria**:
 - PDF button visible in toolbar
@@ -74,12 +74,12 @@ This document provides a complete, step-by-step task breakdown for implementing 
 
 ### US1 Implementation Tasks
 
-- [ ] T009 [US1] Implement `generatePDFFilename()` function in index.html script block
-- [ ] T010 [US1] Implement `generatePDF()` function with basic html2pdf.js configuration in index.html script block
-- [ ] T011 [US1] Add PDF export button click event handler in index.html script block
-- [ ] T012 [US1] Configure html2pdf.js options: A4 format, portrait orientation, 10mm margins in index.html script block
-- [ ] T013 [US1] Implement error handling for missing html2pdf library in index.html script block
-- [ ] T014 [US1] Add basic console logging for PDF generation success/failure in index.html script block
+- [x] T009 [US1] Implement `generatePDFFilename()` function in index.html script block
+- [x] T010 [US1] Implement `generatePDF()` function with basic html2pdf.js configuration in index.html script block
+- [x] T011 [US1] Add PDF export button click event handler in index.html script block
+- [x] T012 [US1] Configure html2pdf.js options: A4 format, portrait orientation, 10mm margins in index.html script block
+- [x] T013 [US1] Implement error handling for missing html2pdf library in index.html script block
+- [x] T014 [US1] Add basic console logging for PDF generation success/failure in index.html script block
 
 **Acceptance Criteria**:
 - Clicking PDF button generates and downloads PDF
@@ -110,12 +110,12 @@ This document provides a complete, step-by-step task breakdown for implementing 
 
 ### US2 Implementation Tasks
 
-- [ ] T015 [US2] Implement `compressImage()` function using Canvas API in index.html script block
-- [ ] T016 [US2] Implement iterative quality reduction algorithm (start 0.95, step -0.05) in index.html script block
-- [ ] T017 [US2] Implement `processImages()` function to find and compress all images in index.html script block
-- [ ] T018 [US2] Add image processing call before PDF generation in `generatePDF()` function in index.html script block
-- [ ] T019 [US2] Configure html2canvas options: useCORS=true for external images in index.html script block
-- [ ] T020 [US2] Add warnings array to PDFGenerationResult for compressed images in index.html script block
+- [x] T015 [US2] Implement `compressImage()` function using Canvas API in index.html script block
+- [x] T016 [US2] Implement iterative quality reduction algorithm (start 0.95, step -0.05) in index.html script block
+- [x] T017 [US2] Implement `processImages()` function to find and compress all images in index.html script block
+- [x] T018 [US2] Add image processing call before PDF generation in `generatePDF()` function in index.html script block
+- [x] T019 [US2] Configure html2canvas options: useCORS=true for external images in index.html script block
+- [x] T020 [US2] Add warnings array to PDFGenerationResult for compressed images in index.html script block
 
 **Acceptance Criteria**:
 - Images >1MB are compressed to ≤1MB
@@ -146,12 +146,12 @@ This document provides a complete, step-by-step task breakdown for implementing 
 
 ### US3 Implementation Tasks
 
-- [ ] T021 [US3] Add button state management (disabled/enabled) in PDF button click handler in index.html script block
-- [ ] T022 [US3] Show loading indicator (⏳) and hide button text during generation in index.html script block
-- [ ] T023 [US3] Show success indicator (✓) for 2 seconds after successful generation in index.html script block
-- [ ] T024 [US3] Implement error message display with user-friendly messages in index.html script block
-- [ ] T025 [US3] Add specific error detection: canvas size exceeded, image loading failed in index.html script block
-- [ ] T026 [US3] Add setTimeout to reset button state after success feedback in index.html script block
+- [x] T021 [US3] Add button state management (disabled/enabled) in PDF button click handler in index.html script block
+- [x] T022 [US3] Show loading indicator (⏳) and hide button text during generation in index.html script block
+- [x] T023 [US3] Show success indicator (✓) for 2 seconds after successful generation in index.html script block
+- [x] T024 [US3] Implement error message display with user-friendly messages in index.html script block
+- [x] T025 [US3] Add specific error detection: canvas size exceeded, image loading failed in index.html script block
+- [x] T026 [US3] Add setTimeout to reset button state after success feedback in index.html script block
 
 **Acceptance Criteria**:
 - Button shows "⏳" during PDF generation
@@ -176,9 +176,9 @@ This document provides a complete, step-by-step task breakdown for implementing 
 
 ### Polish Tasks
 
-- [ ] T027 [P] Add keyboard shortcut Ctrl+Shift+P (Cmd+Shift+P on Mac) for PDF export in index.html script block
-- [ ] T028 [P] Add ARIA labels for accessibility: `aria-label="Export document as PDF"` to button in index.html
-- [ ] T029 [P] Add tooltip to PDF button: `title="Export as PDF file"` in index.html
+- [x] T027 [P] Add keyboard shortcut Ctrl+Shift+P (Cmd+Shift+P on Mac) for PDF export in index.html script block
+- [x] T028 [P] Add ARIA labels for accessibility: `aria-label="Export document as PDF"` to button in index.html
+- [x] T029 [P] Add tooltip to PDF button: `title="Export as PDF file"` in index.html
 - [ ] T030 Test PDF generation on Chrome (latest)
 - [ ] T031 Test PDF generation on Firefox (latest)
 - [ ] T032 Test PDF generation on Safari (latest)
@@ -193,7 +193,7 @@ This document provides a complete, step-by-step task breakdown for implementing 
 - [ ] T041 Test with document containing complex tables
 - [ ] T042 Measure and verify PDF generation time <5s for typical documents
 - [ ] T043 Verify no console errors or warnings during PDF generation
-- [ ] T044 Update README.md with PDF export feature documentation
+- [x] T044 Update README.md with PDF export feature documentation
 
 **Acceptance Criteria**:
 - PDF exports work on all tested browsers

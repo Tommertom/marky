@@ -25,6 +25,7 @@ A powerful, privacy-focused WYSIWYG markdown editor that runs entirely in your b
 - **Download as Markdown** - Save your work as a `.md` file
 - **Copy to Clipboard** - Instantly copy all your markdown with one click
 - **Export as HTML** - Generate standalone, shareable HTML files for review and collaboration workflows. Perfect for sharing specs with stakeholders who need to review and provide feedback without a markdown editor
+- **Export as PDF** - Generate professional PDF documents with one click. Images are automatically optimized to ensure reasonable file sizes while maintaining quality
 
 ### 🎨 What You Can Format
 - **Headings** (H1, H2, H3) - Organize your content with hierarchy
@@ -41,6 +42,7 @@ Make your workflow even faster:
 
 - **Ctrl+S** (Cmd+S on Mac) - Download as markdown file
 - **Ctrl+O** (Cmd+O on Mac) - Upload/open a markdown file
+- **Ctrl+Shift+P** (Cmd+Shift+P on Mac) - Export as PDF file
 
 ## 🎯 Perfect For
 
