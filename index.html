@@ -4,6 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Marky Markdown Editor</title>
+
+    <!-- CRITICAL: Theme initialization BEFORE styles load to prevent FOUC -->
+    <script>
+      (function () {
+        // Get saved preference
+        const saved = localStorage.getItem("marky-theme");
+
+        // Get system preference
+        const systemPrefersDark =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+        // Determine theme
+        const theme = saved || (systemPrefersDark ? "dark" : "light");
+
+        // Apply immediately
+        document.documentElement.setAttribute("data-theme", theme);
+      })();
+    </script>
+
     <style>
       * {
         margin: 0;
@@ -11,32 +31,116 @@
         box-sizing: border-box;
       }
 
+      /* ========================================
+         CSS Variables - Light Theme (Default)
+         ======================================== */
+      :root {
+        /* Backgrounds */
+        --bg-primary: #ffffff;
+        --bg-secondary: #f5f5f5;
+        --bg-toolbar: #2c3e50;
+        --bg-editor: #ffffff;
+        --bg-editor-focus: #fafafa;
+        --bg-format-bar: #ffffff;
+        --bg-code-block: #f4f4f4;
+
+        /* Text Colors */
+        --text-primary: #333333;
+        --text-secondary: #666666;
+        --text-heading: #2c3e50;
+        --text-heading-secondary: #34495e;
+        --text-toolbar: #ffffff;
+
+        /* Borders */
+        --border-primary: #e0e0e0;
+        --border-secondary: #d0d0d0;
+        --border-heading: #eeeeee;
+        --border-blockquote: #3498db;
+        --border-table: #ddd;
+
+        /* Accents */
+        --accent-blue: #3498db;
+        --accent-blue-hover: #2980b9;
+
+        /* Shadows */
+        --shadow-light: rgba(0, 0, 0, 0.1);
+        --shadow-medium: rgba(0, 0, 0, 0.15);
+
+        /* Transitions */
+        --transition-speed: 250ms;
+      }
+
+      /* ========================================
+         CSS Variables - Dark Theme
+         ======================================== */
+      [data-theme="dark"] {
+        /* Backgrounds */
+        --bg-primary: #1a1a1a;
+        --bg-secondary: #2d2d2d;
+        --bg-toolbar: #0f1419;
+        --bg-editor: #1a1a1a;
+        --bg-editor-focus: #222222;
+        --bg-format-bar: #2d2d2d;
+        --bg-code-block: #2a2a2a;
+
+        /* Text Colors */
+        --text-primary: #e0e0e0;
+        --text-secondary: #a0a0a0;
+        --text-heading: #f0f0f0;
+        --text-heading-secondary: #e8e8e8;
+        --text-toolbar: #e0e0e0;
+
+        /* Borders */
+        --border-primary: #404040;
+        --border-secondary: #4a4a4a;
+        --border-heading: #333333;
+        --border-blockquote: #66b3ff;
+        --border-table: #505050;
+
+        /* Accents */
+        --accent-blue: #66b3ff;
+        --accent-blue-hover: #52a3ff;
+
+        /* Shadows */
+        --shadow-light: rgba(0, 0, 0, 0.3);
+        --shadow-medium: rgba(0, 0, 0, 0.4);
+      }
+
+      /* ========================================
+         Smooth Transitions
+         ======================================== */
+      * {
+        transition: background-color var(--transition-speed) ease,
+          color var(--transition-speed) ease,
+          border-color var(--transition-speed) ease;
+      }
+
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           "Helvetica Neue", Arial, sans-serif;
-        background: #f5f5f5;
-        color: #333;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
         line-height: 1.6;
       }
 
       .container {
         max-width: 100%;
         margin: 0 auto;
-        background: white;
+        background: var(--bg-primary);
         min-height: 100vh;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 0 20px var(--shadow-light);
       }
 
       .toolbar {
         position: sticky;
         top: 0;
-        background: #2c3e50;
-        color: white;
+        background: var(--bg-toolbar);
+        color: var(--text-toolbar);
         padding: 1rem 2rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 5px var(--shadow-light);
         z-index: 100;
       }
 
@@ -51,8 +155,8 @@
       }
 
       button {
-        background: #3498db;
-        color: white;
+        background: var(--accent-blue);
+        color: var(--text-toolbar);
         border: none;
         padding: 0.5rem 1rem;
         border-radius: 4px;
@@ -61,11 +165,10 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        transition: background 0.2s;
       }
 
       button:hover {
-        background: #2980b9;
+        background: var(--accent-blue-hover);
       }
 
       button:active {
@@ -118,25 +221,69 @@
         opacity: 0.8;
       }
 
+      .theme-toggle-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+      }
+
+      .theme-toggle {
+        position: relative;
+        width: 40px;
+        height: 20px;
+        background: var(--border-primary);
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.25s ease;
+        border: 1px solid var(--border-secondary);
+      }
+
+      .theme-toggle:hover {
+        background: var(--border-secondary);
+      }
+
+      .theme-toggle-slider {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 14px;
+        height: 14px;
+        background: white;
+        border-radius: 50%;
+        transition: transform 0.25s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .theme-toggle[data-theme="dark"] {
+        background: var(--accent-blue);
+      }
+
+      .theme-toggle[data-theme="dark"] .theme-toggle-slider {
+        transform: translateX(20px);
+      }
+
       #editor {
         padding: 2rem;
         min-height: calc(100vh - 80px);
         outline: none;
-        border: 1px solid #e0e0e0;
+        border: 1px solid var(--border-primary);
         border-radius: 4px;
         margin: 1rem;
+        background: var(--bg-editor);
+        color: var(--text-primary);
       }
 
       #editor:focus {
-        background: #fafafa;
-        border-color: #d0d0d0;
+        background: var(--bg-editor-focus);
+        border-color: var(--border-secondary);
       }
 
       #editor h1 {
         font-size: 2rem;
         margin: 1.5rem 0 1rem;
-        color: #2c3e50;
-        border-bottom: 2px solid #eee;
+        color: var(--text-heading);
+        border-bottom: 2px solid var(--border-heading);
         padding-bottom: 0.5rem;
       }
 
@@ -147,13 +294,13 @@
       #editor h2 {
         font-size: 1.5rem;
         margin: 1.5rem 0 1rem;
-        color: #34495e;
+        color: var(--text-heading-secondary);
       }
 
       #editor h3 {
         font-size: 1.25rem;
         margin: 1.25rem 0 0.75rem;
-        color: #34495e;
+        color: var(--text-heading-secondary);
       }
 
       #editor p {
@@ -171,23 +318,24 @@
       }
 
       #editor blockquote {
-        border-left: 4px solid #3498db;
+        border-left: 4px solid var(--border-blockquote);
         padding-left: 1rem;
         margin: 1rem 0;
-        color: #666;
+        color: var(--text-secondary);
         font-style: italic;
       }
 
       #editor code {
-        background: #f4f4f4;
+        background: var(--bg-code-block);
         padding: 0.2rem 0.4rem;
         border-radius: 3px;
         font-family: "Courier New", monospace;
         font-size: 0.9em;
+        color: var(--text-primary);
       }
 
       #editor pre {
-        background: #f4f4f4;
+        background: var(--bg-code-block);
         padding: 1rem;
         border-radius: 4px;
         overflow-x: auto;
@@ -200,7 +348,7 @@
       }
 
       #editor a {
-        color: #3498db;
+        color: var(--accent-blue);
         text-decoration: none;
       }
 
@@ -217,7 +365,7 @@
 
       #editor hr {
         border: none;
-        border-top: 2px solid #eee;
+        border-top: 2px solid var(--border-heading);
         margin: 2rem 0;
       }
 
@@ -229,29 +377,29 @@
 
       #editor th,
       #editor td {
-        border: 1px solid #ddd;
+        border: 1px solid var(--border-table);
         padding: 0.75rem;
         text-align: left;
       }
 
       #editor th {
-        background: #f4f4f4;
+        background: var(--bg-code-block);
         font-weight: 600;
       }
 
       #editor tr:nth-child(even) {
-        background: #fafafa;
+        background: var(--bg-editor-focus);
       }
 
       .format-bar {
         position: absolute;
-        background: white;
-        border: 1px solid #ddd;
+        background: var(--bg-format-bar);
+        border: 1px solid var(--border-table);
         border-radius: 6px;
         padding: 0.5rem;
         display: none;
         gap: 0.25rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 4px 12px var(--shadow-medium);
         z-index: 1000;
         align-items: center;
       }
@@ -261,9 +409,9 @@
       }
 
       .format-btn {
-        background: white;
-        color: #333;
-        border: 1px solid #ddd;
+        background: var(--bg-format-bar);
+        color: var(--text-primary);
+        border: 1px solid var(--border-table);
         padding: 0.4rem 0.6rem;
         border-radius: 4px;
         cursor: pointer;
@@ -274,29 +422,28 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.2s;
       }
 
       .format-btn:hover {
-        background: #f0f0f0;
-        border-color: #999;
+        background: var(--bg-editor-focus);
+        border-color: var(--border-secondary);
       }
 
       .format-btn:active {
-        background: #e0e0e0;
+        background: var(--bg-secondary);
         transform: translateY(0);
       }
 
       .format-btn.active {
-        background: #3498db;
-        color: white;
-        border-color: #3498db;
+        background: var(--accent-blue);
+        color: var(--text-toolbar);
+        border-color: var(--accent-blue);
       }
 
       .separator {
         width: 1px;
         height: 24px;
-        background: #ddd;
+        background: var(--border-table);
         margin: 0 0.25rem;
       }
 
@@ -550,25 +697,38 @@
             </svg>
             Clear
           </button>
-          <a
-            href="https://github.com/Tommertom/marky"
-            target="_blank"
-            rel="noopener noreferrer"
-            id="githubBtn"
-            title="View on GitHub"
-          >
-            <svg
-              height="32"
-              viewBox="0 0 24 24"
-              version="1.1"
-              width="32"
-              fill="white"
+          <div class="theme-toggle-container">
+            <a
+              href="https://github.com/Tommertom/marky"
+              target="_blank"
+              rel="noopener noreferrer"
+              id="githubBtn"
+              title="View on GitHub"
             >
-              <path
-                d="M12 1C5.923 1 1 5.923 1 12c0 4.867 3.149 8.979 7.521 10.436.55.096.756-.233.756-.522 0-.262-.013-1.128-.013-2.049-2.764.509-3.479-.674-3.699-1.292-.124-.317-.66-1.293-1.127-1.554-.385-.207-.936-.715-.014-.729.866-.014 1.485.797 1.691 1.128.99 1.663 2.571 1.196 3.204.907.096-.715.385-1.196.701-1.471-2.448-.275-5.005-1.224-5.005-5.432 0-1.196.426-2.186 1.128-2.956-.111-.275-.496-1.402.11-2.915 0 0 .921-.288 3.024 1.128a10.193 10.193 0 0 1 2.75-.371c.936 0 1.871.123 2.75.371 2.104-1.43 3.025-1.128 3.025-1.128.605 1.513.221 2.64.111 2.915.701.77 1.127 1.747 1.127 2.956 0 4.222-2.571 5.157-5.019 5.432.399.344.743 1.004.743 2.035 0 1.471-.014 2.654-.014 3.025 0 .289.206.632.756.522C19.851 20.979 23 16.854 23 12c0-6.077-4.922-11-11-11Z"
-              ></path>
-            </svg>
-          </a>
+              <svg
+                height="32"
+                viewBox="0 0 24 24"
+                version="1.1"
+                width="32"
+                fill="white"
+              >
+                <path
+                  d="M12 1C5.923 1 1 5.923 1 12c0 4.867 3.149 8.979 7.521 10.436.55.096.756-.233.756-.522 0-.262-.013-1.128-.013-2.049-2.764.509-3.479-.674-3.699-1.292-.124-.317-.66-1.293-1.127-1.554-.385-.207-.936-.715-.014-.729.866-.014 1.485.797 1.691 1.128.99 1.663 2.571 1.196 3.204.907.096-.715.385-1.196.701-1.471-2.448-.275-5.005-1.224-5.005-5.432 0-1.196.426-2.186 1.128-2.956-.111-.275-.496-1.402.11-2.915 0 0 .921-.288 3.024 1.128a10.193 10.193 0 0 1 2.75-.371c.936 0 1.871.123 2.75.371 2.104-1.43 3.025-1.128 3.025-1.128.605 1.513.221 2.64.111 2.915.701.77 1.127 1.747 1.127 2.956 0 4.222-2.571 5.157-5.019 5.432.399.344.743 1.004.743 2.035 0 1.471-.014 2.654-.014 3.025 0 .289.206.632.756.522C19.851 20.979 23 16.854 23 12c0-6.077-4.922-11-11-11Z"
+                ></path>
+              </svg>
+            </a>
+            <div
+              id="themeToggle"
+              class="theme-toggle"
+              role="switch"
+              aria-checked="false"
+              aria-label="Toggle dark mode"
+              tabindex="0"
+              data-testid="theme-toggle"
+            >
+              <div class="theme-toggle-slider"></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -885,7 +1045,7 @@
           margin: 10,
           filename: filename,
           image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true },
+          html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0 },
           jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
         };
 
@@ -1429,6 +1589,158 @@ ${jsContent}
           pdfBtn.click();
         }
       });
+    </script>
+
+    <script id="theme-manager">
+      const ThemeManager = (function () {
+        const STORAGE_KEY = "marky-theme";
+        const THEME_ATTR = "data-theme";
+        const LIGHT = "light";
+        const DARK = "dark";
+
+        let systemMediaQuery = null;
+
+        function getSystemPreference() {
+          if (
+            window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+          ) {
+            return DARK;
+          }
+          return LIGHT;
+        }
+
+        function hasExplicitPreference() {
+          try {
+            return localStorage.getItem(STORAGE_KEY) !== null;
+          } catch (e) {
+            return false;
+          }
+        }
+
+        function getCurrentTheme() {
+          try {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored === LIGHT || stored === DARK) {
+              return stored;
+            }
+          } catch (e) {
+            // localStorage unavailable
+          }
+          return getSystemPreference();
+        }
+
+        function applyTheme(theme) {
+          if (theme !== LIGHT && theme !== DARK) {
+            theme = LIGHT;
+          }
+          document.documentElement.setAttribute(THEME_ATTR, theme);
+        }
+
+        function setTheme(theme) {
+          if (theme !== LIGHT && theme !== DARK) {
+            return;
+          }
+          try {
+            localStorage.setItem(STORAGE_KEY, theme);
+          } catch (e) {
+            // localStorage unavailable, continue anyway
+          }
+          applyTheme(theme);
+          updateToggleButton(theme);
+        }
+
+        function clearPreference() {
+          try {
+            localStorage.removeItem(STORAGE_KEY);
+          } catch (e) {
+            // localStorage unavailable
+          }
+          const systemTheme = getSystemPreference();
+          applyTheme(systemTheme);
+          updateToggleButton(systemTheme);
+        }
+
+        function toggle() {
+          const current = getCurrentTheme();
+          const newTheme = current === LIGHT ? DARK : LIGHT;
+          setTheme(newTheme);
+        }
+
+        function updateToggleButton(theme) {
+          const toggle = document.getElementById("themeToggle");
+          if (!toggle) return;
+
+          toggle.setAttribute("data-theme", theme);
+          toggle.setAttribute(
+            "aria-checked",
+            theme === DARK ? "true" : "false"
+          );
+
+          if (theme === DARK) {
+            toggle.setAttribute("aria-label", "Switch to light mode");
+          } else {
+            toggle.setAttribute("aria-label", "Switch to dark mode");
+          }
+        }
+
+        function watchSystemChanges() {
+          if (!window.matchMedia) return;
+
+          systemMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+          const handler = (e) => {
+            if (!hasExplicitPreference()) {
+              const newTheme = e.matches ? DARK : LIGHT;
+              applyTheme(newTheme);
+              updateToggleButton(newTheme);
+            }
+          };
+
+          if (systemMediaQuery.addEventListener) {
+            systemMediaQuery.addEventListener("change", handler);
+          } else if (systemMediaQuery.addListener) {
+            systemMediaQuery.addListener(handler);
+          }
+        }
+
+        function init() {
+          const theme = getCurrentTheme();
+          applyTheme(theme);
+          updateToggleButton(theme);
+          watchSystemChanges();
+
+          const toggleButton = document.getElementById("themeToggle");
+          if (toggleButton) {
+            toggleButton.addEventListener("click", toggle);
+            toggleButton.addEventListener("keydown", (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                toggle();
+              }
+            });
+          }
+        }
+
+        return {
+          init,
+          toggle,
+          getCurrentTheme,
+          applyTheme,
+          setTheme,
+          hasExplicitPreference,
+          clearPreference,
+          getSystemPreference,
+          watchSystemChanges,
+          updateToggleButton,
+        };
+      })();
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", ThemeManager.init);
+      } else {
+        ThemeManager.init();
+      }
     </script>
 
     <!-- PDF Export Library -->
