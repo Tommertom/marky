@@ -13,13 +13,14 @@ A powerful, privacy-focused WYSIWYG markdown editor that runs entirely in your b
 ### 📋 Import Your Content
 - **Paste from Clipboard** - Click "Paste MD" to load markdown directly from your clipboard
 - **Upload Files** - Import existing `.md`, `.markdown`, or `.txt` files with one click
-- **Drag & Drop** - Simply drag markdown files into the editor
 
 ### ✏️ Edit with Ease
 - **WYSIWYG Editing** - See your formatted text as you type, no preview pane needed
 - **Formatting Toolbar** - Select any text to reveal formatting options (headings, bold, italic, lists, code blocks)
 - **Live Updates** - Changes appear instantly as you type
 - **Auto-Save** - Your work is automatically saved to your browser every second
+- **Dark Mode** - Toggle between light and dark themes, or let it follow your system preference
+- **Clear Document** - Start fresh with a single click
 
 ### 💾 Export Your Work
 - **Download as Markdown** - Save your work as a `.md` file
@@ -62,6 +63,7 @@ Make your workflow even faster:
 - ✅ **No Data Collection** - We don't track or store your content
 - ✅ **Free Forever** - No subscriptions, no hidden fees
 - ✅ **Open Source** - Transparent and community-driven
+- ✅ **Dark Mode** - Automatic theme switching based on system preference, with manual override
 
 ## 🛠️ Quick Start Guide
 
@@ -85,8 +87,9 @@ Unlike other markdown editors:
 
 - Select any text to see the formatting toolbar appear above it
 - Use the "Paste MD" button to quickly load markdown from anywhere
-- Your work auto-saves - but download important files as a backup
+- Your work auto-saves to localStorage - but download important files as a backup
 - Click "Clear" to start fresh with a new document
+- Toggle dark mode in the toolbar or let it automatically match your system theme
 - **HTML Export Workflow**: Export specs as HTML for non-technical reviewers, who can then provide feedback. Re-import their markdown responses to continue your AI-assisted development cycle without format friction
 
 ## 🤝 For Developers
