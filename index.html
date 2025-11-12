@@ -262,12 +262,6 @@
         transform: translateX(20px);
       }
 
-      .theme-toggle-icon {
-        font-size: 0.65rem;
-        line-height: 1;
-        user-select: none;
-      }
-
       #editor {
         padding: 2rem;
         min-height: calc(100vh - 80px);
@@ -732,7 +726,6 @@
               data-testid="theme-toggle">
               <div class="theme-toggle-slider"></div>
             </div>
-            <span class="theme-toggle-icon">🌙</span>
           </div>
         </div>
       </div>
@@ -1673,15 +1666,8 @@ ${jsContent}
           const toggle = document.getElementById('themeToggle');
           if (!toggle) return;
 
-          const container = toggle.parentElement;
-          const icon = container ? container.querySelector('.theme-toggle-icon') : null;
-
           toggle.setAttribute('data-theme', theme);
           toggle.setAttribute('aria-checked', theme === DARK ? 'true' : 'false');
-
-          if (icon) {
-            icon.textContent = theme === DARK ? '☀️' : '🌙';
-          }
 
           if (theme === DARK) {
             toggle.setAttribute('aria-label', 'Switch to light mode');
