@@ -573,7 +573,7 @@
         border-top: 2px solid var(--accent-blue);
         box-shadow: 0 -2px 10px var(--shadow-medium);
         transform: translateY(100%);
-        transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 99;
         max-height: 70vh;
         overflow-y: auto;
@@ -1217,26 +1217,31 @@
             <span class="status-icon">🔗</span>
             <span class="status-text">Not connected to GitHub</span>
           </div>
-          
-          <div class="file-info" id="fileInfo" style="display: none;">
+
+          <div class="file-info" id="fileInfo" style="display: none">
             <span class="file-icon">📄</span>
             <span class="file-path"></span>
           </div>
-          
-          <div class="repo-info" id="repoInfo" style="display: none;">
+
+          <div class="repo-info" id="repoInfo" style="display: none">
             <span class="repo-name"></span>
             <span class="branch-name"></span>
           </div>
-          
+
           <div class="action-buttons" id="actionButtons">
             <button id="connectGitHubBtn" class="action-btn primary">
               Connect to GitHub
             </button>
           </div>
-          
+
           <div class="notification-area" id="notificationArea"></div>
-          
-          <button class="close-bar-btn" id="closeActionBar" title="Close" aria-label="Close action bar">
+
+          <button
+            class="close-bar-btn"
+            id="closeActionBar"
+            title="Close"
+            aria-label="Close action bar"
+          >
             &times;
           </button>
         </div>
@@ -1275,14 +1280,14 @@
       import { Octokit } from "https://cdn.skypack.dev/@octokit/rest@19.0.13";
 
       const GITHUB_CONFIG = {
-        clientId: 'Ov23lilVFEfpwCJgY8Y0',
+        clientId: "Ov23lilVFEfpwCJgY8Y0",
         redirectUri: window.location.origin + window.location.pathname,
-        scopes: 'repo user:email'
+        scopes: "repo user:email",
       };
 
       const STORAGE_KEYS = {
-        auth: 'marky-github-auth',
-        session: 'marky-github-session'
+        auth: "marky-github-auth",
+        session: "marky-github-session",
       };
 
       let octokit = null;
@@ -1290,68 +1295,75 @@
       let currentSession = null;
 
       const elements = {
-        actionBar: document.getElementById('githubActionBar'),
-        connectionStatus: document.getElementById('connectionStatus'),
-        fileInfo: document.getElementById('fileInfo'),
-        repoInfo: document.getElementById('repoInfo'),
-        actionButtons: document.getElementById('actionButtons'),
-        notificationArea: document.getElementById('notificationArea'),
-        connectBtn: document.getElementById('connectGitHubBtn')
+        actionBar: document.getElementById("githubActionBar"),
+        connectionStatus: document.getElementById("connectionStatus"),
+        fileInfo: document.getElementById("fileInfo"),
+        repoInfo: document.getElementById("repoInfo"),
+        actionButtons: document.getElementById("actionButtons"),
+        notificationArea: document.getElementById("notificationArea"),
+        connectBtn: document.getElementById("connectGitHubBtn"),
       };
 
       function generateRandomState() {
-        return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        return (
+          Math.random().toString(36).substring(2, 15) +
+          Math.random().toString(36).substring(2, 15)
+        );
       }
 
       function showNotification(type, message, action = null, timeout = 5000) {
-        const notification = document.createElement('div');
+        const notification = document.createElement("div");
         notification.className = `notification ${type}`;
-        
+
         const iconMap = {
-          success: '✓',
-          error: '✗',
-          warning: '⚠',
-          info: 'ℹ'
+          success: "✓",
+          error: "✗",
+          warning: "⚠",
+          info: "ℹ",
         };
-        
+
         notification.innerHTML = `
           <div class="notification-icon">${iconMap[type]}</div>
           <div class="notification-content">
             <div class="notification-message">${message}</div>
-            ${action ? `<div class="notification-action"><a href="${action.url}" target="_blank">${action.label}</a></div>` : ''}
+            ${
+              action
+                ? `<div class="notification-action"><a href="${action.url}" target="_blank">${action.label}</a></div>`
+                : ""
+            }
           </div>
         `;
-        
+
         elements.notificationArea.appendChild(notification);
-        
+
         if (timeout > 0) {
           setTimeout(() => {
-            notification.style.opacity = '0';
+            notification.style.opacity = "0";
             setTimeout(() => notification.remove(), 300);
           }, timeout);
         }
-        
+
         return notification;
       }
 
       function clearNotifications() {
-        elements.notificationArea.innerHTML = '';
+        elements.notificationArea.innerHTML = "";
       }
 
       function loadAuthState() {
         try {
           const authData = localStorage.getItem(STORAGE_KEYS.auth);
           if (!authData) return null;
-          
+
           const auth = JSON.parse(authData);
           if (auth.expiresAt && Date.now() >= auth.expiresAt) {
             localStorage.removeItem(STORAGE_KEYS.auth);
             return null;
           }
-          
+
           return auth;
         } catch (error) {
-          console.error('Failed to load auth state:', error);
+          console.error("Failed to load auth state:", error);
           return null;
         }
       }
@@ -1360,7 +1372,7 @@
         try {
           localStorage.setItem(STORAGE_KEYS.auth, JSON.stringify(auth));
         } catch (error) {
-          console.error('Failed to save auth state:', error);
+          console.error("Failed to save auth state:", error);
         }
       }
 
@@ -1375,7 +1387,7 @@
           const sessionData = sessionStorage.getItem(STORAGE_KEYS.session);
           return sessionData ? JSON.parse(sessionData) : null;
         } catch (error) {
-          console.error('Failed to load session:', error);
+          console.error("Failed to load session:", error);
           return null;
         }
       }
@@ -1384,7 +1396,7 @@
         try {
           sessionStorage.setItem(STORAGE_KEYS.session, JSON.stringify(session));
         } catch (error) {
-          console.error('Failed to save session:', error);
+          console.error("Failed to save session:", error);
         }
       }
 
@@ -1395,105 +1407,132 @@
 
       async function handleOAuthCallback() {
         const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
-        const state = urlParams.get('state');
-        const savedState = sessionStorage.getItem('github_oauth_state');
-        
+        const code = urlParams.get("code");
+        const state = urlParams.get("state");
+        const savedState = sessionStorage.getItem("github_oauth_state");
+
         if (code && state && state === savedState) {
-          sessionStorage.removeItem('github_oauth_state');
-          
+          sessionStorage.removeItem("github_oauth_state");
+
           try {
-            const response = await fetch('https://github.com/login/oauth/access_token', {
-              method: 'POST',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                client_id: GITHUB_CONFIG.clientId,
-                code: code,
-              }),
-            });
-            
+            const response = await fetch(
+              "https://github.com/login/oauth/access_token",
+              {
+                method: "POST",
+                headers: {
+                  Accept: "application/json",
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  client_id: GITHUB_CONFIG.clientId,
+                  code: code,
+                }),
+              }
+            );
+
             const data = await response.json();
-            
+
             if (data.access_token) {
-              const expiresAt = data.expires_in ? 
-                Date.now() + (data.expires_in * 1000) : 
-                Date.now() + (8 * 60 * 60 * 1000);
-              
+              const expiresAt = data.expires_in
+                ? Date.now() + data.expires_in * 1000
+                : Date.now() + 8 * 60 * 60 * 1000;
+
               currentAuth = {
                 token: data.access_token,
                 expiresAt: expiresAt,
-                scopes: data.scope ? data.scope.split(',') : []
+                scopes: data.scope ? data.scope.split(",") : [],
               };
-              
+
               octokit = new Octokit({ auth: currentAuth.token });
-              
-              const { data: user } = await octokit.rest.users.getAuthenticated();
+
+              const { data: user } =
+                await octokit.rest.users.getAuthenticated();
               currentAuth.username = user.login;
               currentAuth.userId = user.id;
               currentAuth.avatarUrl = user.avatar_url;
-              
+
               saveAuthState(currentAuth);
               updateUIConnectedState();
-              
-              showNotification('success', `Connected as ${user.login}!`);
-              
-              window.history.replaceState({}, document.title, window.location.pathname);
+
+              showNotification("success", `Connected as ${user.login}!`);
+
+              window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+              );
             } else {
-              throw new Error(data.error_description || 'Failed to get access token');
+              throw new Error(
+                data.error_description || "Failed to get access token"
+              );
             }
           } catch (error) {
-            console.error('OAuth callback error:', error);
-            showNotification('error', `Authentication failed: ${error.message}`);
-            window.history.replaceState({}, document.title, window.location.pathname);
+            console.error("OAuth callback error:", error);
+            showNotification(
+              "error",
+              `Authentication failed: ${error.message}`
+            );
+            window.history.replaceState(
+              {},
+              document.title,
+              window.location.pathname
+            );
           }
         }
       }
 
       function initiateOAuth() {
         const state = generateRandomState();
-        sessionStorage.setItem('github_oauth_state', state);
-        
-        const authUrl = `https://github.com/login/oauth/authorize?` +
+        sessionStorage.setItem("github_oauth_state", state);
+
+        const authUrl =
+          `https://github.com/login/oauth/authorize?` +
           `client_id=${GITHUB_CONFIG.clientId}&` +
           `redirect_uri=${encodeURIComponent(GITHUB_CONFIG.redirectUri)}&` +
           `scope=${encodeURIComponent(GITHUB_CONFIG.scopes)}&` +
           `state=${state}`;
-        
+
         window.location.href = authUrl;
       }
 
       function updateUIConnectedState() {
         if (currentAuth && currentAuth.username) {
-          elements.connectionStatus.querySelector('.status-icon').textContent = '✓';
-          elements.connectionStatus.querySelector('.status-text').textContent = 
-            `Connected as ${currentAuth.username}`;
-          
+          elements.connectionStatus.querySelector(".status-icon").textContent =
+            "✓";
+          elements.connectionStatus.querySelector(
+            ".status-text"
+          ).textContent = `Connected as ${currentAuth.username}`;
+
           elements.actionButtons.innerHTML = `
             <button id="disconnectBtn" class="action-btn secondary">Disconnect</button>
             <button id="selectRepoBtn" class="action-btn primary">Select Repository</button>
           `;
-          
-          document.getElementById('disconnectBtn').addEventListener('click', disconnect);
-          document.getElementById('selectRepoBtn').addEventListener('click', showRepoBrowser);
+
+          document
+            .getElementById("disconnectBtn")
+            .addEventListener("click", disconnect);
+          document
+            .getElementById("selectRepoBtn")
+            .addEventListener("click", showRepoBrowser);
         }
       }
 
       function updateUIDisconnectedState() {
-        elements.connectionStatus.querySelector('.status-icon').textContent = '🔗';
-        elements.connectionStatus.querySelector('.status-text').textContent = 
-          'Not connected to GitHub';
-        
-        elements.fileInfo.style.display = 'none';
-        elements.repoInfo.style.display = 'none';
-        
+        elements.connectionStatus.querySelector(".status-icon").textContent =
+          "🔗";
+        elements.connectionStatus.querySelector(".status-text").textContent =
+          "Not connected to GitHub";
+
+        elements.fileInfo.style.display = "none";
+        elements.repoInfo.style.display = "none";
+
         elements.actionButtons.innerHTML = `
           <button id="connectGitHubBtn" class="action-btn primary">Connect to GitHub</button>
         `;
-        
-        document.getElementById('connectGitHubBtn').addEventListener('click', initiateOAuth);
+
+        document
+          .getElementById("connectGitHubBtn")
+          .addEventListener("click", initiateOAuth);
       }
 
       function disconnect() {
@@ -1501,7 +1540,7 @@
         clearSession();
         updateUIDisconnectedState();
         clearNotifications();
-        showNotification('info', 'Disconnected from GitHub');
+        showNotification("info", "Disconnected from GitHub");
       }
 
       function showRepoBrowser() {
@@ -1515,324 +1554,380 @@
             </button>
           </div>
         `;
-        
-        const existingBrowser = document.querySelector('.repo-browser');
+
+        const existingBrowser = document.querySelector(".repo-browser");
         if (existingBrowser) {
           existingBrowser.remove();
         }
-        
-        elements.actionButtons.insertAdjacentHTML('afterend', browserHTML);
-        
-        document.getElementById('loadRepoBtn').addEventListener('click', loadRepository);
-        document.getElementById('repoInput').addEventListener('keypress', (e) => {
-          if (e.key === 'Enter') loadRepository();
-        });
-        
-        document.getElementById('repoInput').focus();
+
+        elements.actionButtons.insertAdjacentHTML("afterend", browserHTML);
+
+        document
+          .getElementById("loadRepoBtn")
+          .addEventListener("click", loadRepository);
+        document
+          .getElementById("repoInput")
+          .addEventListener("keypress", (e) => {
+            if (e.key === "Enter") loadRepository();
+          });
+
+        document.getElementById("repoInput").focus();
       }
 
       async function loadRepository() {
-        const repoInput = document.getElementById('repoInput');
+        const repoInput = document.getElementById("repoInput");
         const repoFullName = repoInput.value.trim();
-        
-        if (!repoFullName || !repoFullName.includes('/')) {
-          showNotification('error', 'Please enter a repository in the format: owner/repository');
+
+        if (!repoFullName || !repoFullName.includes("/")) {
+          showNotification(
+            "error",
+            "Please enter a repository in the format: owner/repository"
+          );
           return;
         }
-        
-        const [owner, repo] = repoFullName.split('/');
-        
+
+        const [owner, repo] = repoFullName.split("/");
+
         try {
-          const loadBtn = document.getElementById('loadRepoBtn');
+          const loadBtn = document.getElementById("loadRepoBtn");
           loadBtn.disabled = true;
-          loadBtn.innerHTML = '<span class="loading-spinner"></span> Loading...';
-          
-          const { data: repository } = await octokit.rest.repos.get({ owner, repo });
-          
+          loadBtn.innerHTML =
+            '<span class="loading-spinner"></span> Loading...';
+
+          const { data: repository } = await octokit.rest.repos.get({
+            owner,
+            repo,
+          });
+
           const { data: branches } = await octokit.rest.repos.listBranches({
             owner,
             repo,
-            per_page: 100
+            per_page: 100,
           });
-          
+
           currentSession = {
             repository: {
               owner: repository.owner.login,
               name: repository.name,
               fullName: repository.full_name,
               defaultBranch: repository.default_branch,
-              permissions: repository.permissions
+              permissions: repository.permissions,
             },
             baseBranch: repository.default_branch,
-            branches: branches.map(b => b.name),
+            branches: branches.map((b) => b.name),
             file: null,
             pullRequest: null,
             lastSaved: null,
-            isDirty: false
+            isDirty: false,
           };
-          
+
           saveSession(currentSession);
-          
-          document.querySelector('.repo-browser').remove();
-          
-          elements.repoInfo.style.display = 'flex';
-          elements.repoInfo.querySelector('.repo-name').textContent = repository.full_name;
-          elements.repoInfo.querySelector('.branch-name').textContent = repository.default_branch;
-          
+
+          document.querySelector(".repo-browser").remove();
+
+          elements.repoInfo.style.display = "flex";
+          elements.repoInfo.querySelector(".repo-name").textContent =
+            repository.full_name;
+          elements.repoInfo.querySelector(".branch-name").textContent =
+            repository.default_branch;
+
           elements.actionButtons.innerHTML = `
             <button id="disconnectBtn" class="action-btn secondary">Disconnect</button>
             <button id="browseBranchBtn" class="action-btn secondary">Change Branch</button>
             <button id="browseFilesBtn" class="action-btn primary">Browse Files</button>
           `;
-          
-          document.getElementById('disconnectBtn').addEventListener('click', disconnect);
-          document.getElementById('browseBranchBtn').addEventListener('click', showBranchSelector);
-          document.getElementById('browseFilesBtn').addEventListener('click', browseFiles);
-          
-          showNotification('success', `Loaded ${repository.full_name}`);
-          
+
+          document
+            .getElementById("disconnectBtn")
+            .addEventListener("click", disconnect);
+          document
+            .getElementById("browseBranchBtn")
+            .addEventListener("click", showBranchSelector);
+          document
+            .getElementById("browseFilesBtn")
+            .addEventListener("click", browseFiles);
+
+          showNotification("success", `Loaded ${repository.full_name}`);
         } catch (error) {
-          console.error('Failed to load repository:', error);
-          const message = error.status === 404 ? 
-            'Repository not found. Check the name and your access permissions.' :
-            error.status === 403 ?
-            'Access denied. You may not have permission to access this repository.' :
-            `Failed to load repository: ${error.message}`;
-          showNotification('error', message);
+          console.error("Failed to load repository:", error);
+          const message =
+            error.status === 404
+              ? "Repository not found. Check the name and your access permissions."
+              : error.status === 403
+              ? "Access denied. You may not have permission to access this repository."
+              : `Failed to load repository: ${error.message}`;
+          showNotification("error", message);
           loadBtn.disabled = false;
-          loadBtn.textContent = 'Load Repository';
+          loadBtn.textContent = "Load Repository";
         }
       }
 
       function showBranchSelector() {
         if (!currentSession || !currentSession.branches) return;
-        
+
         const branchHTML = `
           <div class="repo-browser">
             <h3 style="margin-bottom: 1rem;">Select Branch</h3>
             <select id="branchSelect" class="action-btn secondary" style="width: 100%; padding: 0.65rem;">
-              ${currentSession.branches.map(branch => 
-                `<option value="${branch}" ${branch === currentSession.baseBranch ? 'selected' : ''}>${branch}</option>`
-              ).join('')}
+              ${currentSession.branches
+                .map(
+                  (branch) =>
+                    `<option value="${branch}" ${
+                      branch === currentSession.baseBranch ? "selected" : ""
+                    }>${branch}</option>`
+                )
+                .join("")}
             </select>
             <button id="selectBranchBtn" class="action-btn primary" style="width: 100%; margin-top: 0.5rem;">
               Select Branch
             </button>
           </div>
         `;
-        
-        const existingBrowser = document.querySelector('.repo-browser');
+
+        const existingBrowser = document.querySelector(".repo-browser");
         if (existingBrowser) existingBrowser.remove();
-        
-        elements.actionButtons.insertAdjacentHTML('afterend', branchHTML);
-        
-        document.getElementById('selectBranchBtn').addEventListener('click', () => {
-          const selectedBranch = document.getElementById('branchSelect').value;
-          currentSession.baseBranch = selectedBranch;
-          saveSession(currentSession);
-          
-          elements.repoInfo.querySelector('.branch-name').textContent = selectedBranch;
-          document.querySelector('.repo-browser').remove();
-          showNotification('success', `Switched to branch: ${selectedBranch}`);
-        });
+
+        elements.actionButtons.insertAdjacentHTML("afterend", branchHTML);
+
+        document
+          .getElementById("selectBranchBtn")
+          .addEventListener("click", () => {
+            const selectedBranch =
+              document.getElementById("branchSelect").value;
+            currentSession.baseBranch = selectedBranch;
+            saveSession(currentSession);
+
+            elements.repoInfo.querySelector(".branch-name").textContent =
+              selectedBranch;
+            document.querySelector(".repo-browser").remove();
+            showNotification(
+              "success",
+              `Switched to branch: ${selectedBranch}`
+            );
+          });
       }
 
       async function browseFiles() {
         if (!currentSession || !currentSession.repository) return;
-        
+
         try {
           const { owner, name } = currentSession.repository;
           const branch = currentSession.baseBranch;
-          
+
           const { data: ref } = await octokit.rest.git.getRef({
             owner,
             repo: name,
-            ref: `heads/${branch}`
+            ref: `heads/${branch}`,
           });
-          
+
           const { data: tree } = await octokit.rest.git.getTree({
             owner,
             repo: name,
             tree_sha: ref.object.sha,
-            recursive: true
+            recursive: true,
           });
-          
-          const markdownFiles = tree.tree.filter(item => 
-            item.type === 'blob' && /\.(md|markdown)$/i.test(item.path)
+
+          const markdownFiles = tree.tree.filter(
+            (item) =>
+              item.type === "blob" && /\.(md|markdown)$/i.test(item.path)
           );
-          
+
           if (markdownFiles.length === 0) {
-            showNotification('warning', 'No markdown files found in this repository.');
+            showNotification(
+              "warning",
+              "No markdown files found in this repository."
+            );
             return;
           }
-          
+
           const fileListHTML = `
             <div class="file-browser">
               <h3 style="margin-bottom: 1rem;">Select Markdown File</h3>
               <input type="text" id="fileSearch" placeholder="Search files..." 
                 aria-label="Search for files">
               <div class="file-list" id="fileList">
-                ${markdownFiles.map(file => 
-                  `<div class="file-item" data-path="${file.path}">${file.path}</div>`
-                ).join('')}
+                ${markdownFiles
+                  .map(
+                    (file) =>
+                      `<div class="file-item" data-path="${file.path}">${file.path}</div>`
+                  )
+                  .join("")}
               </div>
             </div>
           `;
-          
-          const existingBrowser = document.querySelector('.file-browser');
+
+          const existingBrowser = document.querySelector(".file-browser");
           if (existingBrowser) existingBrowser.remove();
-          
-          elements.actionButtons.insertAdjacentHTML('afterend', fileListHTML);
-          
-          document.getElementById('fileSearch').addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            document.querySelectorAll('.file-item').forEach(item => {
-              const path = item.dataset.path.toLowerCase();
-              item.style.display = path.includes(searchTerm) ? 'block' : 'none';
+
+          elements.actionButtons.insertAdjacentHTML("afterend", fileListHTML);
+
+          document
+            .getElementById("fileSearch")
+            .addEventListener("input", (e) => {
+              const searchTerm = e.target.value.toLowerCase();
+              document.querySelectorAll(".file-item").forEach((item) => {
+                const path = item.dataset.path.toLowerCase();
+                item.style.display = path.includes(searchTerm)
+                  ? "block"
+                  : "none";
+              });
             });
+
+          document.querySelectorAll(".file-item").forEach((item) => {
+            item.addEventListener("click", () => loadFile(item.dataset.path));
           });
-          
-          document.querySelectorAll('.file-item').forEach(item => {
-            item.addEventListener('click', () => loadFile(item.dataset.path));
-          });
-          
         } catch (error) {
-          console.error('Failed to browse files:', error);
-          showNotification('error', `Failed to browse files: ${error.message}`);
+          console.error("Failed to browse files:", error);
+          showNotification("error", `Failed to browse files: ${error.message}`);
         }
       }
 
       async function loadFile(filePath) {
         if (!currentSession || !currentSession.repository) return;
-        
+
         try {
           const { owner, name } = currentSession.repository;
           const branch = currentSession.baseBranch;
-          
-          const loadNotification = showNotification('info', 'Loading file...', null, 0);
-          
+
+          const loadNotification = showNotification(
+            "info",
+            "Loading file...",
+            null,
+            0
+          );
+
           const { data: fileData } = await octokit.rest.repos.getContent({
             owner,
             repo: name,
             path: filePath,
-            ref: branch
+            ref: branch,
           });
-          
+
           if (fileData.size > 500000) {
             loadNotification.remove();
-            const proceed = confirm(`This file is ${(fileData.size / 1024).toFixed(0)}KB. Large files may be slow to edit. Continue?`);
+            const proceed = confirm(
+              `This file is ${(fileData.size / 1024).toFixed(
+                0
+              )}KB. Large files may be slow to edit. Continue?`
+            );
             if (!proceed) return;
           }
-          
-          const content = atob(fileData.content.replace(/\s/g, ''));
-          
-          const editor = document.getElementById('editor');
+
+          const content = atob(fileData.content.replace(/\s/g, ""));
+
+          const editor = document.getElementById("editor");
           const md = window.markdownit();
           editor.innerHTML = md.render(content);
-          localStorage.setItem('markdownContent', editor.innerHTML);
-          
+          localStorage.setItem("markdownContent", editor.innerHTML);
+
           currentSession.file = {
             path: filePath,
             sha: fileData.sha,
             content: content,
-            encoding: 'base64'
+            encoding: "base64",
           };
           currentSession.isDirty = false;
           saveSession(currentSession);
-          
-          document.querySelector('.file-browser')?.remove();
-          
-          elements.fileInfo.style.display = 'flex';
-          elements.fileInfo.querySelector('.file-path').textContent = filePath;
-          
+
+          document.querySelector(".file-browser")?.remove();
+
+          elements.fileInfo.style.display = "flex";
+          elements.fileInfo.querySelector(".file-path").textContent = filePath;
+
           elements.actionButtons.innerHTML = `
             <button id="disconnectBtn" class="action-btn secondary">Disconnect</button>
             <button id="browseFilesBtn" class="action-btn secondary">Browse Files</button>
             <button id="saveGitHubBtn" class="action-btn primary">Save to GitHub</button>
           `;
-          
-          document.getElementById('disconnectBtn').addEventListener('click', disconnect);
-          document.getElementById('browseFilesBtn').addEventListener('click', browseFiles);
-          document.getElementById('saveGitHubBtn').addEventListener('click', saveToGitHub);
-          
+
+          document
+            .getElementById("disconnectBtn")
+            .addEventListener("click", disconnect);
+          document
+            .getElementById("browseFilesBtn")
+            .addEventListener("click", browseFiles);
+          document
+            .getElementById("saveGitHubBtn")
+            .addEventListener("click", saveToGitHub);
+
           loadNotification.remove();
-          showNotification('success', `Loaded ${filePath}`);
-          
+          showNotification("success", `Loaded ${filePath}`);
         } catch (error) {
-          console.error('Failed to load file:', error);
-          showNotification('error', `Failed to load file: ${error.message}`);
+          console.error("Failed to load file:", error);
+          showNotification("error", `Failed to load file: ${error.message}`);
         }
       }
 
       async function saveToGitHub() {
         if (!currentSession || !currentSession.file) return;
-        
+
         try {
-          const saveBtn = document.getElementById('saveGitHubBtn');
+          const saveBtn = document.getElementById("saveGitHubBtn");
           saveBtn.disabled = true;
           saveBtn.innerHTML = '<span class="loading-spinner"></span> Saving...';
-          
-          const editor = document.getElementById('editor');
+
+          const editor = document.getElementById("editor");
           const turndownService = new TurndownService({
-            headingStyle: 'atx',
-            codeBlockStyle: 'fenced'
+            headingStyle: "atx",
+            codeBlockStyle: "fenced",
           });
           const markdown = turndownService.turndown(editor.innerHTML);
-          
+
           const { owner, name } = currentSession.repository;
           const filePath = currentSession.file.path;
-          
+
           if (!currentSession.pullRequest) {
             const timestamp = Date.now();
             const branchName = `marky-edit-${timestamp}`;
-            
+
             const { data: ref } = await octokit.rest.git.getRef({
               owner,
               repo: name,
-              ref: `heads/${currentSession.baseBranch}`
+              ref: `heads/${currentSession.baseBranch}`,
             });
-            
+
             await octokit.rest.git.createRef({
               owner,
               repo: name,
               ref: `refs/heads/${branchName}`,
-              sha: ref.object.sha
+              sha: ref.object.sha,
             });
-            
-            const { data: updatedFile } = await octokit.rest.repos.createOrUpdateFileContents({
-              owner,
-              repo: name,
-              path: filePath,
-              message: `Update ${filePath} via Marky Editor`,
-              content: btoa(unescape(encodeURIComponent(markdown))),
-              branch: branchName,
-              sha: currentSession.file.sha
-            });
-            
+
+            const { data: updatedFile } =
+              await octokit.rest.repos.createOrUpdateFileContents({
+                owner,
+                repo: name,
+                path: filePath,
+                message: `Update ${filePath} via Marky Editor`,
+                content: btoa(unescape(encodeURIComponent(markdown))),
+                branch: branchName,
+                sha: currentSession.file.sha,
+              });
+
             const { data: pr } = await octokit.rest.pulls.create({
               owner,
               repo: name,
               title: `Update ${filePath}`,
               head: branchName,
               base: currentSession.baseBranch,
-              body: `Updated ${filePath} using Marky Markdown Editor`
+              body: `Updated ${filePath} using Marky Markdown Editor`,
             });
-            
+
             currentSession.pullRequest = {
               number: pr.number,
               branch: branchName,
               url: pr.html_url,
               state: pr.state,
               mergeable: pr.mergeable,
-              createdAt: Date.now()
+              createdAt: Date.now(),
             };
             currentSession.file.sha = updatedFile.content.sha;
             currentSession.lastSaved = Date.now();
             saveSession(currentSession);
-            
+
             saveBtn.disabled = false;
-            saveBtn.textContent = 'Save to GitHub';
-            
+            saveBtn.textContent = "Save to GitHub";
+
             elements.actionButtons.innerHTML = `
               <button id="disconnectBtn" class="action-btn secondary">Disconnect</button>
               <button id="browseFilesBtn" class="action-btn secondary">Browse Files</button>
@@ -1840,185 +1935,221 @@
               <button id="publishBtn" class="action-btn primary">Publish</button>
               <button id="discardBtn" class="action-btn danger">Discard</button>
             `;
-            
-            document.getElementById('disconnectBtn').addEventListener('click', disconnect);
-            document.getElementById('browseFilesBtn').addEventListener('click', browseFiles);
-            document.getElementById('saveGitHubBtn').addEventListener('click', saveToGitHub);
-            document.getElementById('publishBtn').addEventListener('click', publishPR);
-            document.getElementById('discardBtn').addEventListener('click', discardPR);
-            
-            showNotification('success', 'Pull request created!', 
-              { label: 'View PR', url: pr.html_url });
-            
-          } else {
-            const { data: updatedFile } = await octokit.rest.repos.createOrUpdateFileContents({
-              owner,
-              repo: name,
-              path: filePath,
-              message: `Update ${filePath} via Marky Editor`,
-              content: btoa(unescape(encodeURIComponent(markdown))),
-              branch: currentSession.pullRequest.branch,
-              sha: currentSession.file.sha
+
+            document
+              .getElementById("disconnectBtn")
+              .addEventListener("click", disconnect);
+            document
+              .getElementById("browseFilesBtn")
+              .addEventListener("click", browseFiles);
+            document
+              .getElementById("saveGitHubBtn")
+              .addEventListener("click", saveToGitHub);
+            document
+              .getElementById("publishBtn")
+              .addEventListener("click", publishPR);
+            document
+              .getElementById("discardBtn")
+              .addEventListener("click", discardPR);
+
+            showNotification("success", "Pull request created!", {
+              label: "View PR",
+              url: pr.html_url,
             });
-            
+          } else {
+            const { data: updatedFile } =
+              await octokit.rest.repos.createOrUpdateFileContents({
+                owner,
+                repo: name,
+                path: filePath,
+                message: `Update ${filePath} via Marky Editor`,
+                content: btoa(unescape(encodeURIComponent(markdown))),
+                branch: currentSession.pullRequest.branch,
+                sha: currentSession.file.sha,
+              });
+
             currentSession.file.sha = updatedFile.content.sha;
             currentSession.lastSaved = Date.now();
             saveSession(currentSession);
-            
+
             saveBtn.disabled = false;
-            saveBtn.textContent = 'Save to GitHub';
-            
-            showNotification('success', 'Changes saved to pull request!',
-              { label: 'View PR', url: currentSession.pullRequest.url });
+            saveBtn.textContent = "Save to GitHub";
+
+            showNotification("success", "Changes saved to pull request!", {
+              label: "View PR",
+              url: currentSession.pullRequest.url,
+            });
           }
-          
         } catch (error) {
-          console.error('Failed to save to GitHub:', error);
-          showNotification('error', `Failed to save: ${error.message}`);
-          const saveBtn = document.getElementById('saveGitHubBtn');
+          console.error("Failed to save to GitHub:", error);
+          showNotification("error", `Failed to save: ${error.message}`);
+          const saveBtn = document.getElementById("saveGitHubBtn");
           if (saveBtn) {
             saveBtn.disabled = false;
-            saveBtn.textContent = 'Save to GitHub';
+            saveBtn.textContent = "Save to GitHub";
           }
         }
       }
 
       async function publishPR() {
         if (!currentSession || !currentSession.pullRequest) return;
-        
-        const confirmed = confirm('This will merge the pull request and publish your changes. Continue?');
+
+        const confirmed = confirm(
+          "This will merge the pull request and publish your changes. Continue?"
+        );
         if (!confirmed) return;
-        
+
         try {
           const { owner, name } = currentSession.repository;
           const prNumber = currentSession.pullRequest.number;
-          
-          const publishBtn = document.getElementById('publishBtn');
+
+          const publishBtn = document.getElementById("publishBtn");
           publishBtn.disabled = true;
-          publishBtn.innerHTML = '<span class="loading-spinner"></span> Publishing...';
-          
+          publishBtn.innerHTML =
+            '<span class="loading-spinner"></span> Publishing...';
+
           const { data: pr } = await octokit.rest.pulls.get({
             owner,
             repo: name,
-            pull_number: prNumber
+            pull_number: prNumber,
           });
-          
+
           if (!pr.mergeable) {
-            showNotification('error', 'Pull request has merge conflicts. Please resolve them on GitHub.',
-              { label: 'View PR', url: currentSession.pullRequest.url });
+            showNotification(
+              "error",
+              "Pull request has merge conflicts. Please resolve them on GitHub.",
+              { label: "View PR", url: currentSession.pullRequest.url }
+            );
             publishBtn.disabled = false;
-            publishBtn.textContent = 'Publish';
+            publishBtn.textContent = "Publish";
             return;
           }
-          
+
           await octokit.rest.pulls.merge({
             owner,
             repo: name,
             pull_number: prNumber,
             commit_title: `Merge pull request #${prNumber}`,
-            merge_method: 'merge'
+            merge_method: "merge",
           });
-          
+
           try {
             await octokit.rest.git.deleteRef({
               owner,
               repo: name,
-              ref: `heads/${currentSession.pullRequest.branch}`
+              ref: `heads/${currentSession.pullRequest.branch}`,
             });
           } catch (e) {
-            console.warn('Failed to delete branch:', e);
+            console.warn("Failed to delete branch:", e);
           }
-          
-          showNotification('success', 'Changes published successfully!');
-          
+
+          showNotification("success", "Changes published successfully!");
+
           clearSession();
-          elements.fileInfo.style.display = 'none';
-          elements.repoInfo.style.display = 'none';
+          elements.fileInfo.style.display = "none";
+          elements.repoInfo.style.display = "none";
           updateUIConnectedState();
-          
         } catch (error) {
-          console.error('Failed to publish:', error);
-          showNotification('error', `Failed to publish: ${error.message}`);
-          const publishBtn = document.getElementById('publishBtn');
+          console.error("Failed to publish:", error);
+          showNotification("error", `Failed to publish: ${error.message}`);
+          const publishBtn = document.getElementById("publishBtn");
           if (publishBtn) {
             publishBtn.disabled = false;
-            publishBtn.textContent = 'Publish';
+            publishBtn.textContent = "Publish";
           }
         }
       }
 
       async function discardPR() {
         if (!currentSession || !currentSession.pullRequest) return;
-        
-        const confirmed = confirm('This will close the pull request and discard all changes. Continue?');
+
+        const confirmed = confirm(
+          "This will close the pull request and discard all changes. Continue?"
+        );
         if (!confirmed) return;
-        
+
         try {
           const { owner, name } = currentSession.repository;
           const prNumber = currentSession.pullRequest.number;
-          
+
           await octokit.rest.pulls.update({
             owner,
             repo: name,
             pull_number: prNumber,
-            state: 'closed'
+            state: "closed",
           });
-          
+
           try {
             await octokit.rest.git.deleteRef({
               owner,
               repo: name,
-              ref: `heads/${currentSession.pullRequest.branch}`
+              ref: `heads/${currentSession.pullRequest.branch}`,
             });
           } catch (e) {
-            console.warn('Failed to delete branch:', e);
+            console.warn("Failed to delete branch:", e);
           }
-          
-          showNotification('info', 'Pull request discarded');
-          
+
+          showNotification("info", "Pull request discarded");
+
           clearSession();
-          elements.fileInfo.style.display = 'none';
-          elements.repoInfo.style.display = 'none';
+          elements.fileInfo.style.display = "none";
+          elements.repoInfo.style.display = "none";
           updateUIConnectedState();
-          
         } catch (error) {
-          console.error('Failed to discard PR:', error);
-          showNotification('error', `Failed to discard: ${error.message}`);
+          console.error("Failed to discard PR:", error);
+          showNotification("error", `Failed to discard: ${error.message}`);
         }
       }
 
       currentAuth = loadAuthState();
       currentSession = loadSession();
-      
+
       if (currentAuth && currentAuth.token) {
         octokit = new Octokit({ auth: currentAuth.token });
         updateUIConnectedState();
-        
+
         if (currentSession && currentSession.repository) {
-          elements.repoInfo.style.display = 'flex';
-          elements.repoInfo.querySelector('.repo-name').textContent = currentSession.repository.fullName;
-          elements.repoInfo.querySelector('.branch-name').textContent = currentSession.baseBranch;
-          
+          elements.repoInfo.style.display = "flex";
+          elements.repoInfo.querySelector(".repo-name").textContent =
+            currentSession.repository.fullName;
+          elements.repoInfo.querySelector(".branch-name").textContent =
+            currentSession.baseBranch;
+
           if (currentSession.file) {
-            elements.fileInfo.style.display = 'flex';
-            elements.fileInfo.querySelector('.file-path').textContent = currentSession.file.path;
-            
+            elements.fileInfo.style.display = "flex";
+            elements.fileInfo.querySelector(".file-path").textContent =
+              currentSession.file.path;
+
             elements.actionButtons.innerHTML = `
               <button id="disconnectBtn" class="action-btn secondary">Disconnect</button>
               <button id="browseFilesBtn" class="action-btn secondary">Browse Files</button>
               <button id="saveGitHubBtn" class="action-btn primary">Save to GitHub</button>
-              ${currentSession.pullRequest ? `
+              ${
+                currentSession.pullRequest
+                  ? `
                 <button id="publishBtn" class="action-btn primary">Publish</button>
                 <button id="discardBtn" class="action-btn danger">Discard</button>
-              ` : ''}
+              `
+                  : ""
+              }
             `;
-            
-            document.getElementById('disconnectBtn').addEventListener('click', disconnect);
-            document.getElementById('browseFilesBtn').addEventListener('click', browseFiles);
-            document.getElementById('saveGitHubBtn').addEventListener('click', saveToGitHub);
+
+            document
+              .getElementById("disconnectBtn")
+              .addEventListener("click", disconnect);
+            document
+              .getElementById("browseFilesBtn")
+              .addEventListener("click", browseFiles);
+            document
+              .getElementById("saveGitHubBtn")
+              .addEventListener("click", saveToGitHub);
             if (currentSession.pullRequest) {
-              document.getElementById('publishBtn').addEventListener('click', publishPR);
-              document.getElementById('discardBtn').addEventListener('click', discardPR);
+              document
+                .getElementById("publishBtn")
+                .addEventListener("click", publishPR);
+              document
+                .getElementById("discardBtn")
+                .addEventListener("click", discardPR);
             }
           } else {
             elements.actionButtons.innerHTML = `
@@ -2026,16 +2157,22 @@
               <button id="browseBranchBtn" class="action-btn secondary">Change Branch</button>
               <button id="browseFilesBtn" class="action-btn primary">Browse Files</button>
             `;
-            
-            document.getElementById('disconnectBtn').addEventListener('click', disconnect);
-            document.getElementById('browseBranchBtn').addEventListener('click', showBranchSelector);
-            document.getElementById('browseFilesBtn').addEventListener('click', browseFiles);
+
+            document
+              .getElementById("disconnectBtn")
+              .addEventListener("click", disconnect);
+            document
+              .getElementById("browseBranchBtn")
+              .addEventListener("click", showBranchSelector);
+            document
+              .getElementById("browseFilesBtn")
+              .addEventListener("click", browseFiles);
           }
         }
       } else {
         updateUIDisconnectedState();
       }
-      
+
       handleOAuthCallback();
     </script>
 
