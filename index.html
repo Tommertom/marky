@@ -4,25 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Marky Markdown Editor</title>
-    
+
     <!-- CRITICAL: Theme initialization BEFORE styles load to prevent FOUC -->
     <script>
-      (function() {
+      (function () {
         // Get saved preference
-        const saved = localStorage.getItem('marky-theme');
-        
+        const saved = localStorage.getItem("marky-theme");
+
         // Get system preference
-        const systemPrefersDark = window.matchMedia && 
-          window.matchMedia('(prefers-color-scheme: dark)').matches;
-        
+        const systemPrefersDark =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+
         // Determine theme
-        const theme = saved || (systemPrefersDark ? 'dark' : 'light');
-        
+        const theme = saved || (systemPrefersDark ? "dark" : "light");
+
         // Apply immediately
-        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.setAttribute("data-theme", theme);
       })();
     </script>
-    
+
     <style>
       * {
         margin: 0;
@@ -716,14 +717,15 @@
                 ></path>
               </svg>
             </a>
-            <div 
-              id="themeToggle" 
+            <div
+              id="themeToggle"
               class="theme-toggle"
               role="switch"
               aria-checked="false"
               aria-label="Toggle dark mode"
               tabindex="0"
-              data-testid="theme-toggle">
+              data-testid="theme-toggle"
+            >
               <div class="theme-toggle-slider"></div>
             </div>
           </div>
@@ -1043,7 +1045,7 @@
           margin: 10,
           filename: filename,
           image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true },
+          html2canvas: { scale: 2, useCORS: true, scrollX: 0, scrollY: 0 },
           jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
         };
 
@@ -1591,15 +1593,18 @@ ${jsContent}
 
     <script id="theme-manager">
       const ThemeManager = (function () {
-        const STORAGE_KEY = 'marky-theme';
-        const THEME_ATTR = 'data-theme';
-        const LIGHT = 'light';
-        const DARK = 'dark';
+        const STORAGE_KEY = "marky-theme";
+        const THEME_ATTR = "data-theme";
+        const LIGHT = "light";
+        const DARK = "dark";
 
         let systemMediaQuery = null;
 
         function getSystemPreference() {
-          if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          if (
+            window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+          ) {
             return DARK;
           }
           return LIGHT;
@@ -1663,24 +1668,27 @@ ${jsContent}
         }
 
         function updateToggleButton(theme) {
-          const toggle = document.getElementById('themeToggle');
+          const toggle = document.getElementById("themeToggle");
           if (!toggle) return;
 
-          toggle.setAttribute('data-theme', theme);
-          toggle.setAttribute('aria-checked', theme === DARK ? 'true' : 'false');
+          toggle.setAttribute("data-theme", theme);
+          toggle.setAttribute(
+            "aria-checked",
+            theme === DARK ? "true" : "false"
+          );
 
           if (theme === DARK) {
-            toggle.setAttribute('aria-label', 'Switch to light mode');
+            toggle.setAttribute("aria-label", "Switch to light mode");
           } else {
-            toggle.setAttribute('aria-label', 'Switch to dark mode');
+            toggle.setAttribute("aria-label", "Switch to dark mode");
           }
         }
 
         function watchSystemChanges() {
           if (!window.matchMedia) return;
 
-          systemMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-          
+          systemMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
           const handler = (e) => {
             if (!hasExplicitPreference()) {
               const newTheme = e.matches ? DARK : LIGHT;
@@ -1690,7 +1698,7 @@ ${jsContent}
           };
 
           if (systemMediaQuery.addEventListener) {
-            systemMediaQuery.addEventListener('change', handler);
+            systemMediaQuery.addEventListener("change", handler);
           } else if (systemMediaQuery.addListener) {
             systemMediaQuery.addListener(handler);
           }
@@ -1702,11 +1710,11 @@ ${jsContent}
           updateToggleButton(theme);
           watchSystemChanges();
 
-          const toggleButton = document.getElementById('themeToggle');
+          const toggleButton = document.getElementById("themeToggle");
           if (toggleButton) {
-            toggleButton.addEventListener('click', toggle);
-            toggleButton.addEventListener('keydown', (e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+            toggleButton.addEventListener("click", toggle);
+            toggleButton.addEventListener("keydown", (e) => {
+              if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 toggle();
               }
@@ -1724,12 +1732,12 @@ ${jsContent}
           clearPreference,
           getSystemPreference,
           watchSystemChanges,
-          updateToggleButton
+          updateToggleButton,
         };
       })();
 
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', ThemeManager.init);
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", ThemeManager.init);
       } else {
         ThemeManager.init();
       }
