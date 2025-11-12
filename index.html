@@ -855,6 +855,11 @@
         <ul>
           <li><strong>Ctrl+S</strong> (Cmd+S on Mac) - Download markdown</li>
           <li><strong>Ctrl+O</strong> (Cmd+O on Mac) - Upload file</li>
+          <li><strong>Ctrl+Z</strong> (Cmd+Z on Mac) - Undo</li>
+          <li>
+            <strong>Ctrl+Y</strong> or
+            <strong>Ctrl+Shift+Z</strong> (Cmd+Shift+Z on Mac) - Redo
+          </li>
         </ul>
         <h2>🔒 Privacy First</h2>
         <p>
@@ -929,8 +934,10 @@
 <ul>
 <li><strong>Ctrl+S</strong> (Cmd+S on Mac) - Download markdown</li>
 <li><strong>Ctrl+O</strong> (Cmd+O on Mac) - Upload file</li>
+<li><strong>Ctrl+Z</strong> (Cmd+Z on Mac) - Undo</li>
+<li><strong>Ctrl+Y</strong> or <strong>Ctrl+Shift+Z</strong> (Cmd+Shift+Z on Mac) - Redo</li>
 </ul>
-<h2>� Privacy First</h2>
+<h2>🔒 Privacy First</h2>
 <p>Everything happens in your browser. No data is sent to servers. Your work auto-saves locally every second.</p>
 <p><strong>Ready to write?</strong> Click "Clear" to start with a blank document, or just start typing!</p>`;
 
@@ -1284,7 +1291,24 @@ ${jsContent}
           )
         ) {
           editor.innerHTML = "<p><br></p>";
-          localStorage.setItem("markdownContent", editor.innerHTML);
+          localStorage.removeItem("markdownContent");
+
+          // Debug logging
+          console.log("=== MARKY CLEAR DEBUG ===");
+          console.log(
+            JSON.stringify(
+              {
+                timestamp: new Date().toISOString(),
+                action: "Clear button clicked",
+                editorContent: editor.innerHTML,
+                localStorageRemoved: true,
+                remainingKeys: Object.keys(localStorage),
+              },
+              null,
+              2
+            )
+          );
+
           editor.focus();
           const range = document.createRange();
           const sel = window.getSelection();
@@ -1383,13 +1407,106 @@ ${jsContent}
 
       window.addEventListener("load", () => {
         const saved = localStorage.getItem("markdownContent");
-        if (saved) {
+        const theme = localStorage.getItem("marky-theme");
+
+        // Check if saved content is essentially empty
+        const savedTrimmed = saved ? saved.trim() : "";
+        const isEmptyContent =
+          !saved ||
+          savedTrimmed === "" ||
+          savedTrimmed === "<p><br></p>" ||
+          savedTrimmed === "<p></p>";
+
+        // Debug logging in JSON format
+        const debugInfo = {
+          timestamp: new Date().toISOString(),
+          localStorage: {
+            markdownContent: {
+              exists: saved !== null,
+              isUndefined: saved === undefined,
+              value: saved,
+              length: saved ? saved.length : 0,
+              trimmed: savedTrimmed,
+              trimmedLength: savedTrimmed.length,
+              isEmptyContent: isEmptyContent,
+            },
+            theme: theme,
+            allKeys: Object.keys(localStorage),
+            storageSize: JSON.stringify(localStorage).length,
+          },
+          decision: {
+            hasSavedContent: !!saved && !isEmptyContent,
+            willLoadDefault: isEmptyContent,
+            action:
+              !saved || isEmptyContent
+                ? "Loading default content"
+                : "Loading saved content",
+          },
+          editorState: {
+            currentHTML: editor.innerHTML.substring(0, 100) + "...",
+            currentLength: editor.innerHTML.length,
+          },
+        };
+
+        console.log("=== MARKY LOAD DEBUG ===");
+        console.log(JSON.stringify(debugInfo, null, 2));
+
+        if (saved && !isEmptyContent) {
           editor.innerHTML = saved;
+          console.log("✓ Loaded saved content from localStorage");
+        } else {
+          editor.innerHTML = defaultContent;
+          console.log("✓ Loaded default welcome content");
+          // Clean up the empty content from localStorage
+          if (saved) {
+            localStorage.removeItem("markdownContent");
+            console.log("✓ Removed empty content from localStorage");
+          }
         }
       });
 
       window.addEventListener("beforeunload", () => {
-        localStorage.setItem("markdownContent", editor.innerHTML);
+        const currentContent = editor.innerHTML.trim();
+        // Check if content is empty or just the empty paragraph placeholder
+        const willSave =
+          currentContent &&
+          currentContent !== "<p><br></p>" &&
+          currentContent !== "<p></p>" &&
+          currentContent !== "";
+
+        // Debug logging
+        console.log("=== MARKY BEFOREUNLOAD DEBUG ===");
+        console.log(
+          JSON.stringify(
+            {
+              timestamp: new Date().toISOString(),
+              editorContent: {
+                raw: currentContent.substring(0, 100) + "...",
+                length: currentContent.length,
+                trimmedLength: currentContent.trim().length,
+                isEmpty: currentContent === "<p><br></p>",
+                isEmptyOrWhitespace:
+                  !currentContent || currentContent.trim() === "",
+              },
+              decision: {
+                willSave: willSave,
+                reason: willSave
+                  ? "Content is not empty"
+                  : "Content is empty - not saving",
+              },
+            },
+            null,
+            2
+          )
+        );
+
+        // Only save if content is not essentially empty
+        if (willSave) {
+          localStorage.setItem("markdownContent", editor.innerHTML);
+          console.log("✓ Saved content to localStorage on beforeunload");
+        } else {
+          console.log("✗ Skipped saving empty content on beforeunload");
+        }
       });
 
       function showFormatBar() {
@@ -1597,6 +1714,18 @@ ${jsContent}
         if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "P") {
           e.preventDefault();
           pdfBtn.click();
+        }
+        if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
+          e.preventDefault();
+          document.execCommand("undo");
+        }
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "z") {
+          e.preventDefault();
+          document.execCommand("redo");
+        }
+        if ((e.ctrlKey || e.metaKey) && e.key === "y") {
+          e.preventDefault();
+          document.execCommand("redo");
         }
       });
     </script>

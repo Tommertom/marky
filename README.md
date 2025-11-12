@@ -44,6 +44,8 @@ Make your workflow even faster:
 - **Ctrl+S** (Cmd+S on Mac) - Download as markdown file
 - **Ctrl+O** (Cmd+O on Mac) - Upload/open a markdown file
 - **Ctrl+Shift+P** (Cmd+Shift+P on Mac) - Export as PDF file
+- **Ctrl+Z** (Cmd+Z on Mac) - Undo
+- **Ctrl+Y** or **Ctrl+Shift+Z** (Cmd+Shift+Z on Mac) - Redo
 
 ## 🎯 Perfect For
 
