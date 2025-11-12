@@ -22,19 +22,26 @@ Enable users to connect Marky Markdown Editor to their GitHub repositories, allo
 ### Primary User Flow
 
 1. **User wants to edit a markdown file in a GitHub repository**
-   - User clicks "Connect to GitHub" button in toolbar
+   - User clicks GitHub logo in toolbar
+   - Bottom action bar slides up from bottom of page
+   - Action bar shows "Connect to GitHub" button
+   - User clicks "Connect to GitHub" button
    - Application redirects to GitHub OAuth authentication page
    - User grants permissions to Marky application
    - User is redirected back to Marky with authentication token
    - Token is stored securely in browser
+   - Action bar updates to show connected status
 
 2. **User selects repository and file to edit**
-   - User sees a "Browse GitHub" button or modal after authentication
+   - After authentication, action bar shows "Browse Repository" button
+   - User clicks "Browse Repository" button
+   - Modal or expanded action bar shows repository browser interface
    - User enters or selects repository (owner/repo format, e.g., "Tommertom/marky")
    - User selects or enters branch name (e.g., "main", "develop")
    - Application fetches list of markdown files in the repository
    - User selects a markdown file from the list
    - File content is loaded into the WYSIWYG editor
+   - Action bar shows file path and available actions
 
 3. **User edits the markdown file**
    - File content displays in the editor with full formatting
@@ -42,7 +49,7 @@ Enable users to connect Marky Markdown Editor to their GitHub repositories, allo
    - Changes are tracked locally in the editor
 
 4. **User saves changes (creates/updates PR)**
-   - User clicks "Save to GitHub" button
+   - User clicks "Save to GitHub" button in bottom action bar
    - If no PR exists for this edit session:
      - Application creates a new branch from the selected base branch
      - Branch name follows pattern: `marky-edit-[filename]-[timestamp]`
@@ -52,13 +59,14 @@ Enable users to connect Marky Markdown Editor to their GitHub repositories, allo
    - If PR already exists from previous save in this session:
      - New commit is added to the existing PR branch
      - PR is updated with the new commit
-   - User sees confirmation with PR number and link
+   - Action bar shows confirmation with PR number and link
+   - "Publish" button becomes enabled in action bar
 
 5. **User publishes changes (merges PR)**
-   - User clicks "Publish" button
+   - User clicks "Publish" button in bottom action bar
    - Application merges the pull request to the base branch
    - PR is closed automatically
-   - User sees success confirmation
+   - Action bar shows success confirmation
    - Editor can be cleared or user can start a new edit session
 
 ### Alternative Scenarios
@@ -107,17 +115,22 @@ Enable users to connect Marky Markdown Editor to their GitHub repositories, allo
 ### Core Functionality
 
 1. **GitHub Authentication**
-   - "Connect to GitHub" button in toolbar (next to existing buttons)
+   - GitHub logo in toolbar (existing button)
+   - Clicking logo toggles bottom action bar visibility
+   - Clicking logo also opens GitHub repository page in new tab (dual action)
+   - Bottom action bar slides up from bottom of page when toggled
+   - Action bar shows "Connect to GitHub" button when not authenticated
    - OAuth 2.0 authentication flow using GitHub Apps or OAuth Apps
    - Requested scopes: `repo` (full repository access for private and public repos), `user:email` (user identification)
    - Redirect URI configured for application domain
    - Access token stored securely in browser sessionStorage or localStorage
    - Token encrypted or handled according to OAuth security best practices
-   - "Disconnect" option to clear authentication and remove token
-   - Visual indicator showing connection status (connected/disconnected)
+   - "Disconnect" option in action bar to clear authentication and remove token
+   - Visual indicator in action bar showing connection status (connected/disconnected)
 
 2. **Repository and File Selection**
-   - Modal or sidebar panel for repository browsing
+   - "Browse Repository" button appears in action bar after authentication
+   - Clicking opens modal or expands action bar with repository browser interface
    - Input field for repository (autocomplete from user's accessible repos preferred)
    - Repository format validation: `owner/repo-name`
    - Dropdown or input for branch selection
@@ -125,7 +138,7 @@ Enable users to connect Marky Markdown Editor to their GitHub repositories, allo
    - File browser showing markdown files (`.md`, `.markdown` extensions)
    - File list fetched via GitHub API (tree endpoint)
    - Option to filter or search files by name
-   - Selected file path displayed prominently (e.g., "Editing: owner/repo@branch/path/to/file.md")
+   - Selected file path displayed in action bar (e.g., "owner/repo@branch/path/to/file.md")
 
 3. **Load File into Editor**
    - Fetch file content from GitHub API (contents endpoint)
@@ -137,7 +150,7 @@ Enable users to connect Marky Markdown Editor to their GitHub repositories, allo
    - Error handling for file not found, access denied, or API failures
 
 4. **Save Changes (Create/Update PR)**
-   - "Save to GitHub" button in toolbar (distinct from local "Download MD" button)
+   - "Save to GitHub" button in bottom action bar (distinct from toolbar "Download MD" button)
    - Button disabled until authentication and file selection complete
    - Save workflow:
      - Check if PR already exists for current edit session (tracked by session state)
@@ -151,14 +164,14 @@ Enable users to connect Marky Markdown Editor to their GitHub repositories, allo
        - Update PR description with commit list if desired
    - Commit message:
      - Default: "Update [filename] via Marky"
-     - Optional: User can provide custom commit message (input field or modal)
+     - Optional: User can provide custom commit message (input field in action bar or modal)
    - Pull request title: "Marky edit: [filename]"
    - Pull request description: "This PR was created using Marky Markdown Editor.\n\nFile: `[path]`\nBranch: `[base-branch]`"
-   - Display success notification with PR number and link to PR on GitHub
+   - Success notification displayed in action bar with PR number and link to PR on GitHub
    - Error handling for commit failures, API rate limits, permission issues
 
 5. **Publish Changes (Merge PR)**
-   - "Publish" button in toolbar (appears after PR is created)
+   - "Publish" button in bottom action bar (appears after PR is created)
    - Button state:
      - Disabled until PR is created
      - Disabled if PR has merge conflicts
@@ -168,11 +181,11 @@ Enable users to connect Marky Markdown Editor to their GitHub repositories, allo
      - If mergeable, merge PR using GitHub API (merge method: merge commit, squash, or rebase based on repository settings)
      - Close PR automatically after merge
      - Delete PR branch (optional, configurable)
-     - Display success confirmation
+     - Display success confirmation in action bar
      - Clear PR session state
    - Handle merge conflicts:
      - Detect conflicts via API
-     - Display error message: "This PR has merge conflicts. Please resolve them on GitHub: [link]"
+     - Display error message in action bar: "This PR has merge conflicts. Please resolve them on GitHub: [link]"
      - Prevent merge until conflicts resolved
    - Error handling for merge failures, permission issues, branch protection rules
 
@@ -192,22 +205,34 @@ Enable users to connect Marky Markdown Editor to their GitHub repositories, allo
      - User explicitly cancels/discards PR
 
 7. **Discard/Cancel PR**
-   - "Discard PR" or "Cancel" button (visible when PR exists)
+   - "Discard PR" or "Cancel" button in action bar (visible when PR exists)
    - Confirmation prompt: "Are you sure? This will close the PR without merging."
    - Close PR via GitHub API without merging
    - Optionally delete PR branch
    - Clear session state
    - User can start new edit session
 
-8. **Connection Status Display**
-   - Visual indicator in toolbar showing GitHub connection status:
+8. **Bottom Action Bar UI**
+   - Positioned at bottom of page, full width
+   - Slides up/down with smooth animation when GitHub logo is clicked
+   - Semi-transparent or solid background (distinct from main editor)
+   - Contains all GitHub integration controls (Connect, Browse, Save, Publish, Discard, Disconnect)
+   - Shows current connection status and file path when applicable
+   - Displays notifications and feedback messages inline
+   - Can be collapsed/hidden by clicking GitHub logo again or close button
+   - Does not obstruct editor content when visible (either overlays or pushes content up)
+   - Responsive design for mobile devices (stacks buttons vertically if needed)
+
+9. **Connection Status Display**
+   - Visual indicator in action bar showing GitHub connection status:
      - "Not connected" (default state, shows "Connect to GitHub" button)
      - "Connected as [username]" (shows user's GitHub username, shows "Disconnect" option)
-   - Display current repository/branch/file when editing:
-     - Toolbar badge or subtitle: "owner/repo@branch/path/to/file.md"
-     - Clicking badge opens repository browser to change file
+   - Display current repository/branch/file in action bar when editing:
+     - Action bar shows: "owner/repo@branch/path/to/file.md"
+     - Clicking file path opens repository browser to change file
 
-9. **Error Handling and User Feedback**
+10. **Error Handling and User Feedback**
+   - All feedback displayed within the action bar
    - Authentication errors: "Failed to connect to GitHub. Please try again."
    - Permission errors: "You don't have permission to access this repository or file."
    - API rate limit errors: "GitHub API rate limit exceeded. Please try again in [time]."
