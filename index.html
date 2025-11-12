@@ -72,6 +72,31 @@
         transform: translateY(1px);
       }
 
+      /* PDF Button Styles */
+      #pdfBtn:disabled {
+        background: #95a5a6;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+
+      #pdfBtn:hover:not(:disabled) {
+        background: #2980b9;
+      }
+
+      .loading-indicator {
+        font-size: 1.2rem;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
       #githubBtn {
         background: transparent;
         color: white;
@@ -448,6 +473,30 @@
             </svg>
             Export HTML
           </button>
+          <button
+            id="pdfBtn"
+            title="Export as PDF file"
+            aria-label="Export document as PDF"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+              ></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <span class="btn-text">PDF</span>
+            <span class="loading-indicator" style="display: none">⏳</span>
+          </button>
           <button id="downloadBtn" title="Download as markdown (Ctrl+S)">
             <svg
               width="20"
@@ -687,6 +736,7 @@
       const editor = document.getElementById("editor");
       const downloadBtn = document.getElementById("downloadBtn");
       const exportBtn = document.getElementById("exportBtn");
+      const pdfBtn = document.getElementById("pdfBtn");
       const uploadBtn = document.getElementById("uploadBtn");
       const pasteBtn = document.getElementById("pasteBtn");
       const clearBtn = document.getElementById("clearBtn");
@@ -723,6 +773,134 @@
 
       function markdownToHtml(markdown) {
         return md.render(markdown);
+      }
+
+      function generatePDFFilename() {
+        const firstHeading = editor.querySelector("h1");
+        let title = "marky";
+
+        if (firstHeading && firstHeading.textContent.trim()) {
+          title = firstHeading.textContent
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, "")
+            .replace(/\s+/g, "-")
+            .substring(0, 50);
+        }
+
+        const timestamp = Date.now();
+        return `${title}-${timestamp}.pdf`;
+      }
+
+      async function compressImage(imgElement, maxSizeBytes = 1048576) {
+        try {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
+
+          canvas.width = imgElement.naturalWidth || imgElement.width;
+          canvas.height = imgElement.naturalHeight || imgElement.height;
+
+          ctx.drawImage(imgElement, 0, 0);
+
+          let quality = 0.95;
+          let compressedDataUrl = canvas.toDataURL("image/jpeg", quality);
+
+          while (
+            compressedDataUrl.length > maxSizeBytes * 1.37 &&
+            quality > 0.1
+          ) {
+            quality -= 0.05;
+            compressedDataUrl = canvas.toDataURL("image/jpeg", quality);
+          }
+
+          const originalSize = imgElement.src.length;
+          const compressedSize = compressedDataUrl.length;
+
+          console.log(
+            `[PDF] Image compressed: ${(originalSize / 1024).toFixed(2)}KB → ${(
+              compressedSize / 1024
+            ).toFixed(2)}KB (quality: ${quality.toFixed(2)})`
+          );
+
+          return {
+            dataUrl: compressedDataUrl,
+            originalSize: originalSize,
+            compressedSize: compressedSize,
+            quality: quality,
+            wasCompressed: compressedSize < originalSize,
+          };
+        } catch (error) {
+          console.warn("[PDF] Image compression failed:", error);
+          return {
+            dataUrl: imgElement.src,
+            originalSize: imgElement.src.length,
+            compressedSize: imgElement.src.length,
+            quality: 1.0,
+            wasCompressed: false,
+            error: error.message,
+          };
+        }
+      }
+
+      async function processImages(element) {
+        const images = element.querySelectorAll("img");
+        const warnings = [];
+
+        for (let img of images) {
+          const originalSrc = img.src;
+
+          if (img.src.length > 1048576 * 1.37) {
+            const result = await compressImage(img);
+
+            if (result.wasCompressed) {
+              img.src = result.dataUrl;
+              warnings.push(
+                `Image compressed from ${(result.originalSize / 1024).toFixed(
+                  0
+                )}KB to ${(result.compressedSize / 1024).toFixed(0)}KB`
+              );
+            } else if (result.error) {
+              warnings.push(`Failed to compress image: ${result.error}`);
+            }
+          }
+        }
+
+        return warnings;
+      }
+
+      async function generatePDF() {
+        console.log("[PDF] Starting PDF generation");
+
+        if (typeof html2pdf === "undefined") {
+          console.error("[PDF] html2pdf library not loaded");
+          throw new Error("PDF library not loaded. Please refresh the page.");
+        }
+
+        const element = editor.cloneNode(true);
+        const filename = generatePDFFilename();
+
+        const warnings = await processImages(element);
+
+        const options = {
+          margin: 10,
+          filename: filename,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+        };
+
+        try {
+          console.log("[PDF] Generating PDF with options:", options);
+          if (warnings.length > 0) {
+            console.log("[PDF] Warnings:", warnings);
+          }
+          await html2pdf().set(options).from(element).save();
+          console.log("[PDF] PDF generated successfully:", filename);
+          return { success: true, filename: filename, warnings: warnings };
+        } catch (error) {
+          console.error("[PDF] PDF generation failed:", error);
+          throw error;
+        }
       }
 
       exportBtn.addEventListener("click", () => {
@@ -771,6 +949,17 @@ ${cssContent}
                         <line x1="9" y1="15" x2="15" y2="15"></line>
                     </svg>
                     Export HTML
+                </button>
+                <button id="pdfBtn" title="Export as PDF file" aria-label="Export document as PDF">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <span class="btn-text">PDF</span>
+                    <span class="loading-indicator" style="display:none">⏳</span>
                 </button>
                 <button id="downloadBtn" title="Download as markdown (Ctrl+S)">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -933,6 +1122,41 @@ ${jsContent}
           range.collapse(true);
           sel.removeAllRanges();
           sel.addRange(range);
+        }
+      });
+
+      pdfBtn.addEventListener("click", async () => {
+        const loadingIndicator = pdfBtn.querySelector(".loading-indicator");
+        const btnText = pdfBtn.querySelector(".btn-text");
+
+        try {
+          pdfBtn.disabled = true;
+          btnText.style.display = "none";
+          loadingIndicator.style.display = "inline-block";
+
+          const result = await generatePDF();
+
+          btnText.style.display = "inline";
+          loadingIndicator.style.display = "none";
+
+          const originalText = btnText.textContent;
+          btnText.textContent = "✓ Saved!";
+          setTimeout(() => {
+            btnText.textContent = originalText;
+            pdfBtn.disabled = false;
+          }, 2000);
+        } catch (error) {
+          btnText.style.display = "inline";
+          loadingIndicator.style.display = "none";
+
+          const originalText = btnText.textContent;
+          btnText.textContent = "✗ Failed";
+          setTimeout(() => {
+            btnText.textContent = originalText;
+            pdfBtn.disabled = false;
+          }, 2000);
+
+          alert(`Failed to generate PDF: ${error.message}`);
         }
       });
 
@@ -1200,7 +1424,19 @@ ${jsContent}
           e.preventDefault();
           uploadBtn.click();
         }
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "P") {
+          e.preventDefault();
+          pdfBtn.click();
+        }
       });
     </script>
+
+    <!-- PDF Export Library -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+      integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
   </body>
 </html>
