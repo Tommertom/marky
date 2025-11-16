@@ -1217,19 +1217,34 @@
         const element = editor.cloneNode(true);
         const filename = generatePDFFilename();
 
-        // Apply light mode styles to cloned element and all children
+        // Create a temporary wrapper to hold the cloned element
+        // Must be visible for html2canvas to render properly
+        const wrapper = document.createElement("div");
+        wrapper.style.position = "fixed";
+        wrapper.style.left = "-10000px"; // Off-screen but must be rendered
+        wrapper.style.top = "0";
+        wrapper.style.width = "210mm"; // A4 width
+        wrapper.style.background = "#ffffff";
+        wrapper.style.padding = "20px";
+        wrapper.style.zIndex = "-1";
+
+        // Apply light mode styles to cloned element
         element.style.background = "#ffffff";
         element.style.color = "#333333";
         element.style.border = "none";
         element.style.margin = "0";
-        element.style.padding = "2rem";
+        element.style.padding = "0";
+        element.style.width = "100%";
+        element.style.fontFamily =
+          "-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif";
+        element.style.fontSize = "16px";
+        element.style.lineHeight = "1.6";
 
-        // Force light mode colors on all child elements to prevent dark mode CSS variables
-        // from making text invisible on white background
+        // Force light mode colors on all child elements
         const allElements = element.querySelectorAll("*");
         allElements.forEach((el) => {
-          // Reset color to inherit from parent (which is now #333333)
-          el.style.color = "inherit";
+          // Reset color to inherit from parent
+          el.style.color = "#333333";
 
           // Fix specific elements that might have CSS variable colors
           if (
@@ -1238,14 +1253,17 @@
             el.tagName === "H3"
           ) {
             el.style.color = "#2c3e50";
+            el.style.fontWeight = "bold";
           } else if (el.tagName === "A") {
             el.style.color = "#3498db";
           } else if (el.tagName === "CODE") {
             el.style.backgroundColor = "#f4f4f4";
             el.style.color = "#e74c3c";
+            el.style.padding = "2px 4px";
           } else if (el.tagName === "PRE") {
             el.style.backgroundColor = "#f4f4f4";
             el.style.color = "#333333";
+            el.style.padding = "10px";
           } else if (el.tagName === "BLOCKQUOTE") {
             el.style.borderLeftColor = "#3498db";
             el.style.backgroundColor = "#f9f9f9";
@@ -1254,51 +1272,59 @@
             el.style.borderColor = "#ddd";
             el.style.color = "#333333";
           }
-
-          // Remove any background colors that might use CSS variables
-          const computedStyle = window.getComputedStyle(el);
-          if (
-            computedStyle.backgroundColor === "rgba(0, 0, 0, 0)" ||
-            computedStyle.backgroundColor === "transparent"
-          ) {
-            // Leave transparent backgrounds alone
-          } else if (
-            el.tagName !== "CODE" &&
-            el.tagName !== "PRE" &&
-            el.tagName !== "BLOCKQUOTE"
-          ) {
-            // Reset background to transparent for other elements
-            el.style.backgroundColor = "transparent";
-          }
         });
 
-        const warnings = await processImages(element);
-
-        const options = {
-          margin: 10,
-          filename: filename,
-          image: { type: "jpeg", quality: 0.98 },
-          html2canvas: {
-            scale: 2,
-            useCORS: true,
-            scrollX: 0,
-            scrollY: 0,
-            backgroundColor: "#ffffff",
-          },
-          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        };
+        // Add to DOM temporarily
+        wrapper.appendChild(element);
+        document.body.appendChild(wrapper);
 
         try {
+          // Give browser time to compute styles and layout
+          await new Promise((resolve) => setTimeout(resolve, 200));
+
+          console.log("[PDF] Element dimensions:", {
+            width: element.offsetWidth,
+            height: element.offsetHeight,
+            scrollWidth: element.scrollWidth,
+            scrollHeight: element.scrollHeight,
+          });
+
+          const warnings = await processImages(element);
+
+          const options = {
+            margin: [10, 10, 10, 10],
+            filename: filename,
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: {
+              scale: 2,
+              useCORS: true,
+              scrollX: 0,
+              scrollY: 0,
+              backgroundColor: "#ffffff",
+              logging: true,
+              letterRendering: true,
+              allowTaint: false,
+              removeContainer: false,
+            },
+            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+          };
+
           console.log("[PDF] Generating PDF with options:", options);
           if (warnings.length > 0) {
             console.log("[PDF] Warnings:", warnings);
           }
+
           await html2pdf().set(options).from(element).save();
           console.log("[PDF] PDF generated successfully:", filename);
           return { success: true, filename: filename, warnings: warnings };
         } catch (error) {
           console.error("[PDF] PDF generation failed:", error);
           throw error;
+        } finally {
+          // Always remove the temporary wrapper from DOM
+          if (wrapper.parentNode) {
+            document.body.removeChild(wrapper);
+          }
         }
       }
 
