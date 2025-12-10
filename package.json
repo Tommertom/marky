@@ -1,0 +1,20 @@
+{
+  "name": "marky-md-to-docx",
+  "version": "1.0.0",
+  "description": "Convert Markdown files to DOCX format using markdown-it",
+  "main": "md-to-docx.js",
+  "type": "module",
+  "scripts": {
+    "convert": "node md-to-docx.js"
+  },
+  "dependencies": {
+    "markdown-it": "^13.0.1",
+    "html-to-docx": "^1.8.0"
+  },
+  "keywords": [
+    "markdown",
+    "docx",
+    "converter"
+  ],
+  "license": "MIT"
+}

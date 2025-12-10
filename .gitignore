@@ -1,6 +1,7 @@
-.github
 .firebaserc
 .firebase/*
+
+node_modules/
 
 # Environment variables
 .env
