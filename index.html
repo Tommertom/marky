@@ -483,6 +483,39 @@
         background: var(--bg-editor-focus);
       }
 
+      /* Mermaid Diagram Styles */
+      .mermaid-wrapper {
+        margin: 1rem 0;
+        padding: 1rem;
+        background: var(--bg-code-block);
+        border-radius: 8px;
+        border: 1px solid var(--border-primary);
+        overflow-x: auto;
+        text-align: center;
+      }
+
+      .mermaid-wrapper svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .mermaid-wrapper .mermaid-error {
+        color: #e74c3c;
+        padding: 1rem;
+        font-family: monospace;
+        white-space: pre-wrap;
+        text-align: left;
+      }
+
+      .mermaid-source {
+        display: none;
+      }
+
+      /* Dark mode adjustments for Mermaid */
+      [data-theme="dark"] .mermaid-wrapper {
+        background: var(--bg-code-block);
+      }
+
       .format-bar {
         position: absolute;
         background: var(--bg-format-bar);
@@ -1065,6 +1098,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/turndown@7.1.2/dist/turndown.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
 
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -1089,6 +1123,112 @@
       const turndownService = new TurndownService({
         headingStyle: "atx",
         codeBlockStyle: "fenced",
+      });
+
+      // Initialize Mermaid with theme support
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: currentTheme === 'dark' ? 'dark' : 'default',
+        securityLevel: 'loose',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif',
+      });
+
+      // Mermaid diagram counter for unique IDs
+      let mermaidCounter = 0;
+
+      /**
+       * Render all mermaid code blocks in the given container
+       * Converts <pre><code class="language-mermaid"> to rendered SVG diagrams
+       */
+      async function renderMermaidDiagrams(container) {
+        const mermaidBlocks = container.querySelectorAll('pre code.language-mermaid');
+        
+        for (const codeBlock of mermaidBlocks) {
+          const pre = codeBlock.parentElement;
+          const source = codeBlock.textContent.trim();
+          
+          if (!source) continue;
+          
+          const wrapper = document.createElement('div');
+          wrapper.className = 'mermaid-wrapper';
+          wrapper.setAttribute('contenteditable', 'false');
+          
+          // Store source in hidden element for markdown conversion
+          const sourceElement = document.createElement('pre');
+          sourceElement.className = 'mermaid-source';
+          sourceElement.textContent = source;
+          wrapper.appendChild(sourceElement);
+          
+          const diagramContainer = document.createElement('div');
+          diagramContainer.className = 'mermaid-diagram';
+          wrapper.appendChild(diagramContainer);
+          
+          try {
+            const id = `mermaid-${Date.now()}-${mermaidCounter++}`;
+            const { svg } = await mermaid.render(id, source);
+            diagramContainer.innerHTML = svg;
+          } catch (error) {
+            console.error('[Mermaid] Render error:', error);
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'mermaid-error';
+            errorDiv.textContent = `Mermaid Error: ${error.message || 'Failed to render diagram'}`;
+            diagramContainer.appendChild(errorDiv);
+            
+            // Also show the source code when there's an error
+            const codeDisplay = document.createElement('pre');
+            codeDisplay.style.textAlign = 'left';
+            codeDisplay.style.marginTop = '1rem';
+            codeDisplay.innerHTML = `<code>${source.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code>`;
+            diagramContainer.appendChild(codeDisplay);
+          }
+          
+          pre.parentNode.replaceChild(wrapper, pre);
+        }
+      }
+
+      /**
+       * Re-render all mermaid diagrams with new theme
+       */
+      async function reRenderMermaidWithTheme(theme) {
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: theme === 'dark' ? 'dark' : 'default',
+          securityLevel: 'loose',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif',
+        });
+        
+        const wrappers = editor.querySelectorAll('.mermaid-wrapper');
+        for (const wrapper of wrappers) {
+          const sourceElement = wrapper.querySelector('.mermaid-source');
+          if (!sourceElement) continue;
+          
+          const source = sourceElement.textContent.trim();
+          const diagramContainer = wrapper.querySelector('.mermaid-diagram');
+          
+          try {
+            const id = `mermaid-${Date.now()}-${mermaidCounter++}`;
+            const { svg } = await mermaid.render(id, source);
+            diagramContainer.innerHTML = svg;
+          } catch (error) {
+            console.error('[Mermaid] Re-render error:', error);
+          }
+        }
+      }
+
+      // Turndown rule to convert mermaid wrappers back to markdown code blocks
+      turndownService.addRule('mermaid', {
+        filter: function(node) {
+          return node.classList && node.classList.contains('mermaid-wrapper');
+        },
+        replacement: function(content, node) {
+          const sourceElement = node.querySelector('.mermaid-source');
+          if (sourceElement) {
+            const source = sourceElement.textContent.trim();
+            return '\n\n```mermaid\n' + source + '\n```\n\n';
+          }
+          return '';
+        }
       });
 
       const editor = document.getElementById("editor");
@@ -1630,6 +1770,7 @@ ${jsContent}
           if (clipboardText && clipboardText.trim()) {
             const html = markdownToHtml(clipboardText);
             editor.innerHTML = html;
+            await renderMermaidDiagrams(editor);
             localStorage.setItem("markdownContent", editor.innerHTML);
           }
         } catch (err) {
@@ -1644,10 +1785,11 @@ ${jsContent}
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = async (event) => {
           const markdown = event.target.result;
           const html = markdownToHtml(markdown);
           editor.innerHTML = html;
+          await renderMermaidDiagrams(editor);
           localStorage.setItem("markdownContent", editor.innerHTML);
         };
         reader.readAsText(file);
@@ -2089,6 +2231,10 @@ ${jsContent}
           const current = getCurrentTheme();
           const newTheme = current === LIGHT ? DARK : LIGHT;
           setTheme(newTheme);
+          // Re-render mermaid diagrams with new theme
+          if (typeof reRenderMermaidWithTheme === 'function') {
+            reRenderMermaidWithTheme(newTheme);
+          }
         }
 
         function updateToggleButton(theme) {
