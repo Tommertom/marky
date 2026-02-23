@@ -1239,7 +1239,8 @@
       }
 
       function containsLatex(text) {
-        return /(\\\((?:.|\n)+?\\\)|\\\[(?:.|\n)+?\\\]|\$\$(?:.|\n)+?\$\$|(^|[^\\$])\$(?!\$)(?:[^$\n]|\\\$)+?\$(?!\$))/m.test(
+        // Matches \(...\), \[...\], $$...$$, and inline $...$ delimiters.
+        return /(\\\([\s\S]+?\\\)|\\\[[\s\S]+?\\\]|\$\$[\s\S]+?\$\$|(^|[^\\$])\$(?!\$)(?:[^$\n]|\\\$)+?\$(?!\$))/m.test(
           text || ""
         );
       }
@@ -1977,7 +1978,9 @@ ${jsContent}
           console.log("✓ Keeping existing editor content (exported HTML mode)");
         }
 
-        renderMermaidDiagrams(editor).then(() => renderLatex(editor));
+        renderMermaidDiagrams(editor)
+          .then(() => renderLatex(editor))
+          .catch((error) => console.error("[Render] Startup render error:", error));
       });
 
       window.addEventListener("beforeunload", () => {
