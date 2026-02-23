@@ -1584,7 +1584,10 @@
         const needsMermaid =
           currentContent.includes("language-mermaid") ||
           currentContent.includes("mermaid-wrapper");
-        const needsMathJax = containsLatex(currentText);
+        const needsMathJax =
+          containsLatex(currentText) ||
+          currentContent.includes("mjx-container") ||
+          currentContent.includes("MJX-CHTML");
 
         const jsContent = document.getElementById("app-script").textContent;
 
