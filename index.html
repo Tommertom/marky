@@ -1239,7 +1239,11 @@
       }
 
       function containsLatex(text) {
-        // Matches \(...\), \[...\], $$...$$, and inline $...$ delimiters.
+        // Matches:
+        // 1) \( ... \)  inline math
+        // 2) \[ ... \]  display math
+        // 3) $$ ... $$  display math
+        // 4) $ ... $    inline math
         return /(\\\([\s\S]+?\\\)|\\\[[\s\S]+?\\\]|\$\$[\s\S]+?\$\$|(^|[^\\$])\$(?!\$)(?:[^$\n]|\\\$)+?\$(?!\$))/m.test(
           text || ""
         );
@@ -1978,9 +1982,18 @@ ${jsContent}
           console.log("✓ Keeping existing editor content (exported HTML mode)");
         }
 
-        renderMermaidDiagrams(editor)
-          .then(() => renderLatex(editor))
-          .catch((error) => console.error("[Render] Startup render error:", error));
+        (async () => {
+          try {
+            await renderMermaidDiagrams(editor);
+          } catch (error) {
+            console.error("[Mermaid] Startup render error:", error);
+          }
+          try {
+            await renderLatex(editor);
+          } catch (error) {
+            console.error("[MathJax] Startup render error:", error);
+          }
+        })();
       });
 
       window.addEventListener("beforeunload", () => {
