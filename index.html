@@ -1253,6 +1253,20 @@
         if (!window.MathJax || typeof window.MathJax.typesetPromise !== "function")
           return;
         if (!containsLatex(container.textContent)) return;
+
+        // Avoid mutating the live contenteditable editor DOM.
+        // MathJax typesetting replaces TeX with <mjx-*> output, which would
+        // otherwise be persisted to localStorage and passed through Turndown,
+        // making it impossible to recover the original LaTeX source.
+        const isInEditableRegion =
+          container.isContentEditable ||
+          (typeof container.closest === "function" &&
+            container.closest('[contenteditable="true"]'));
+        if (isInEditableRegion) {
+          // Intentionally skip typesetting on editable content. Callers that need
+          // rendered math for export/preview should pass a non-editable clone.
+          return;
+        }
         try {
           await window.MathJax.typesetPromise([container]);
         } catch (error) {
