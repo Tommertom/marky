@@ -7,13 +7,15 @@ const turndownService = new TurndownService({
 // Initialize Mermaid with theme support
 const currentTheme =
   document.documentElement.getAttribute("data-theme") || "light";
-mermaid.initialize({
-  startOnLoad: false,
-  theme: currentTheme === "dark" ? "dark" : "default",
-  securityLevel: "loose",
-  fontFamily:
-    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif',
-});
+if (window.mermaid) {
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: currentTheme === "dark" ? "dark" : "default",
+    securityLevel: "loose",
+    fontFamily:
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif',
+  });
+}
 
 // Mermaid diagram counter for unique IDs
 let mermaidCounter = 0;
@@ -23,6 +25,7 @@ let mermaidCounter = 0;
  * Converts <pre><code class="language-mermaid"> to rendered SVG diagrams
  */
 async function renderMermaidDiagrams(container) {
+  if (!window.mermaid) return;
   const mermaidBlocks = container.querySelectorAll("pre code.language-mermaid");
 
   for (const codeBlock of mermaidBlocks) {
@@ -76,6 +79,7 @@ async function renderMermaidDiagrams(container) {
  * Re-render all mermaid diagrams with new theme
  */
 async function reRenderMermaidWithTheme(theme) {
+  if (!window.mermaid) return;
   mermaid.initialize({
     startOnLoad: false,
     theme: theme === "dark" ? "dark" : "default",
@@ -99,6 +103,32 @@ async function reRenderMermaidWithTheme(theme) {
     } catch (error) {
       console.error("[Mermaid] Re-render error:", error);
     }
+  }
+}
+
+function containsLatex(text) {
+  // Matches: \\( ... \\), \\[ ... \\], $$ ... $$, $ ... $
+  return /(\\\\\([\s\S]+?\\\\\)|\\\\\[[\s\S]+?\\\\\]|\$\$[\s\S]+?\$\$|(^|[^\\\\$])\$(?!\$)(?:[^$\n]|\\\\\$)+?\$(?!\$))/m.test(
+    text || "",
+  );
+}
+
+async function renderLatex(container) {
+  if (!window.MathJax || typeof window.MathJax.typesetPromise !== "function")
+    return;
+  if (!containsLatex(container.textContent)) return;
+
+  // Avoid mutating the live contenteditable editor DOM.
+  const isInEditableRegion =
+    container.isContentEditable ||
+    (typeof container.closest === "function" &&
+      container.closest('[contenteditable="true"]'));
+  if (isInEditableRegion) return;
+
+  try {
+    await window.MathJax.typesetPromise([container]);
+  } catch (error) {
+    console.error("[MathJax] Render error:", error);
   }
 }
 
@@ -401,6 +431,14 @@ async function generatePDF() {
 
 exportBtn.addEventListener("click", async () => {
   const currentContent = editor.innerHTML;
+  const currentText = editor.textContent || "";
+  const needsMermaid =
+    currentContent.includes("language-mermaid") ||
+    currentContent.includes("mermaid-wrapper");
+  const needsMathJax =
+    containsLatex(currentText) ||
+    currentContent.includes("mjx-container") ||
+    currentContent.includes("MJX-CHTML");
 
   let cssContent = "";
   let jsContent = "";
@@ -555,6 +593,8 @@ ${cssContent}
     
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"><\/script>
     <script src="https://cdn.jsdelivr.net/npm/turndown@7.1.2/dist/turndown.min.js"><\/script>
+    ${needsMermaid ? '<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"><\\/script>' : ""}
+    ${needsMathJax ? '<script>window.MathJax={tex:{inlineMath:[["$","$"],["\\\\(","\\\\)"]],displayMath:[["$$","$$"],["\\\\[","\\\\]"]]},options:{skipHtmlTags:["script","noscript","style","textarea","pre","code"],ignoreHtmlClass:"mermaid-wrapper"}};<\\/script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"><\\/script>' : ""}
     <script id="app-script">
 ${jsContent}
     <\/script>
@@ -687,6 +727,7 @@ pasteBtn.addEventListener("click", async () => {
       const html = markdownToHtml(clipboardText);
       editor.innerHTML = html;
       await renderMermaidDiagrams(editor);
+      await renderLatex(editor);
       localStorage.setItem("markdownContent", editor.innerHTML);
     }
   } catch (err) {
@@ -704,6 +745,7 @@ fileInput.addEventListener("change", (e) => {
     const html = markdownToHtml(markdown);
     editor.innerHTML = html;
     await renderMermaidDiagrams(editor);
+    await renderLatex(editor);
     localStorage.setItem("markdownContent", editor.innerHTML);
   };
   reader.readAsText(file);
@@ -804,6 +846,19 @@ window.addEventListener("load", () => {
     // Keep the current editor content (for exported HTML files with embedded content)
     console.log("✓ Keeping existing editor content (exported HTML mode)");
   }
+
+  (async () => {
+    try {
+      await renderMermaidDiagrams(editor);
+    } catch (error) {
+      console.error("[Mermaid] Startup render error:", error);
+    }
+    try {
+      await renderLatex(editor);
+    } catch (error) {
+      console.error("[MathJax] Startup render error:", error);
+    }
+  })();
 });
 
 window.addEventListener("beforeunload", () => {
