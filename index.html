@@ -1099,6 +1099,25 @@
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/turndown@7.1.2/dist/turndown.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [
+            ["$", "$"],
+            ["\\(", "\\)"],
+          ],
+          displayMath: [
+            ["$$", "$$"],
+            ["\\[", "\\]"],
+          ],
+        },
+        options: {
+          skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+          ignoreHtmlClass: "mermaid-wrapper",
+        },
+      };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -1128,13 +1147,15 @@
       // Initialize Mermaid with theme support
       const currentTheme =
         document.documentElement.getAttribute("data-theme") || "light";
-      mermaid.initialize({
-        startOnLoad: false,
-        theme: currentTheme === "dark" ? "dark" : "default",
-        securityLevel: "loose",
-        fontFamily:
-          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif',
-      });
+      if (window.mermaid) {
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: currentTheme === "dark" ? "dark" : "default",
+          securityLevel: "loose",
+          fontFamily:
+            '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif',
+        });
+      }
 
       // Mermaid diagram counter for unique IDs
       let mermaidCounter = 0;
@@ -1144,6 +1165,7 @@
        * Converts <pre><code class="language-mermaid"> to rendered SVG diagrams
        */
       async function renderMermaidDiagrams(container) {
+        if (!window.mermaid) return;
         const mermaidBlocks = container.querySelectorAll(
           "pre code.language-mermaid"
         );
@@ -1199,6 +1221,7 @@
        * Re-render all mermaid diagrams with new theme
        */
       async function reRenderMermaidWithTheme(theme) {
+        if (!window.mermaid) return;
         mermaid.initialize({
           startOnLoad: false,
           theme: theme === "dark" ? "dark" : "default",
@@ -1222,6 +1245,42 @@
           } catch (error) {
             console.error("[Mermaid] Re-render error:", error);
           }
+        }
+      }
+
+      function containsLatex(text) {
+        // Matches:
+        // 1) \( ... \)  inline math
+        // 2) \[ ... \]  display math
+        // 3) $$ ... $$  display math
+        // 4) $ ... $    inline math
+        return /(\\\([\s\S]+?\\\)|\\\[[\s\S]+?\\\]|\$\$[\s\S]+?\$\$|(^|[^\\$])\$(?!\$)(?:[^$\n]|\\\$)+?\$(?!\$))/m.test(
+          text || ""
+        );
+      }
+
+      async function renderLatex(container) {
+        if (!window.MathJax || typeof window.MathJax.typesetPromise !== "function")
+          return;
+        if (!containsLatex(container.textContent)) return;
+
+        // Avoid mutating the live contenteditable editor DOM.
+        // MathJax typesetting replaces TeX with <mjx-*> output, which would
+        // otherwise be persisted to localStorage and passed through Turndown,
+        // making it impossible to recover the original LaTeX source.
+        const isInEditableRegion =
+          container.isContentEditable ||
+          (typeof container.closest === "function" &&
+            container.closest('[contenteditable="true"]'));
+        if (isInEditableRegion) {
+          // Intentionally skip typesetting on editable content. Callers that need
+          // rendered math for export/preview should pass a non-editable clone.
+          return;
+        }
+        try {
+          await window.MathJax.typesetPromise([container]);
+        } catch (error) {
+          console.error("[MathJax] Render error:", error);
         }
       }
 
@@ -1531,6 +1590,14 @@
 
       exportBtn.addEventListener("click", () => {
         const currentContent = editor.innerHTML;
+        const currentText = editor.textContent || "";
+        const needsMermaid =
+          currentContent.includes("language-mermaid") ||
+          currentContent.includes("mermaid-wrapper");
+        const needsMathJax =
+          containsLatex(currentText) ||
+          currentContent.includes("mjx-container") ||
+          currentContent.includes("MJX-CHTML");
 
         const jsContent = document.getElementById("app-script").textContent;
 
@@ -1676,6 +1743,16 @@ ${cssContent}
     
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"><\/script>
     <script src="https://cdn.jsdelivr.net/npm/turndown@7.1.2/dist/turndown.min.js"><\/script>
+    ${
+      needsMermaid
+        ? '<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"><\\/script>'
+        : ""
+    }
+    ${
+      needsMathJax
+        ? '<script>window.MathJax={tex:{inlineMath:[["$","$"],["\\\\(","\\\\)"]],displayMath:[["$$","$$"],["\\\\[","\\\\]"]]},options:{skipHtmlTags:["script","noscript","style","textarea","pre","code"],ignoreHtmlClass:"mermaid-wrapper"}};<\\/script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"><\\/script>'
+        : ""
+    }
     <script id="app-script">
 ${jsContent}
     <\/script>
@@ -1810,6 +1887,7 @@ ${jsContent}
             const html = markdownToHtml(clipboardText);
             editor.innerHTML = html;
             await renderMermaidDiagrams(editor);
+            await renderLatex(editor);
             localStorage.setItem("markdownContent", editor.innerHTML);
           }
         } catch (err) {
@@ -1829,6 +1907,7 @@ ${jsContent}
           const html = markdownToHtml(markdown);
           editor.innerHTML = html;
           await renderMermaidDiagrams(editor);
+          await renderLatex(editor);
           localStorage.setItem("markdownContent", editor.innerHTML);
         };
         reader.readAsText(file);
@@ -1929,6 +2008,19 @@ ${jsContent}
           // Keep the current editor content (for exported HTML files with embedded content)
           console.log("✓ Keeping existing editor content (exported HTML mode)");
         }
+
+        (async () => {
+          try {
+            await renderMermaidDiagrams(editor);
+          } catch (error) {
+            console.error("[Mermaid] Startup render error:", error);
+          }
+          try {
+            await renderLatex(editor);
+          } catch (error) {
+            console.error("[MathJax] Startup render error:", error);
+          }
+        })();
       });
 
       window.addEventListener("beforeunload", () => {
