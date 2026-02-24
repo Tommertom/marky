@@ -50,8 +50,10 @@ A powerful WYSIWYG markdown editor that runs entirely in your browser. No instal
 
 ### LaTeX examples
 ```latex
-  E = mc^2
+$$\mathbb{N} = \{ a \in \mathbb{Z} : a > 0 \}$$
 ```
+
+$$\mathbb{N} = \{ a \in \mathbb{Z} : a > 0 \}$$
 
 ## ⌨️ Keyboard Shortcuts
 

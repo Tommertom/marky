@@ -112,13 +112,6 @@ async function renderLatex(container) {
     return;
   if (!containsLatex(container.textContent)) return;
 
-  // Avoid mutating the live contenteditable editor DOM.
-  const isInEditableRegion =
-    container.isContentEditable ||
-    (typeof container.closest === "function" &&
-      container.closest('[contenteditable="true"]'));
-  if (isInEditableRegion) return;
-
   try {
     await window.MathJax.typesetPromise([container]);
   } catch (error) {
