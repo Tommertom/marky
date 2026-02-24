@@ -36,6 +36,22 @@ A powerful WYSIWYG markdown editor that runs entirely in your browser. No instal
 - **Tables** - Organize data in structured tables
 - **Links & Images** - Add hyperlinks and embed images
 - **Blockquotes** - Highlight quotes or important notes
+- Mermaid diagrams
+- Latex math formulas
+
+### Mermain examples
+```mermaid
+  graph TD;
+      A-->B;
+      A-->C;
+      B-->D;
+      C-->D;
+```
+
+### LaTeX examples
+```latex
+  E = mc^2
+```
 
 ## ⌨️ Keyboard Shortcuts
 
