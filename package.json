@@ -5,7 +5,8 @@
   "main": "md-to-docx.js",
   "type": "module",
   "scripts": {
-    "convert": "node md-to-docx.js"
+    "convert": "node md-to-docx.js",
+    "serve": "npx http-server -S -C certs/cert.pem -K certs/key.pem -p 8443 ."
   },
   "dependencies": {
     "markdown-it": "^13.0.1",

@@ -29,21 +29,27 @@
       /**
        * Convert SVG element to PNG data URL
        */
-      async function svgToPngDataUrl(svgElement, maxWidth = 600) {
+      async function svgToPngDataUrl(svgElement, maxWidth = 1200) {
         return new Promise((resolve, reject) => {
           try {
             // Clone the SVG to avoid modifying the original
             const svgClone = svgElement.cloneNode(true);
 
-            // Get dimensions
-            let width =
-              parseFloat(svgClone.getAttribute("width")) ||
-              svgElement.getBoundingClientRect().width ||
-              400;
-            let height =
-              parseFloat(svgClone.getAttribute("height")) ||
-              svgElement.getBoundingClientRect().height ||
-              300;
+            // Get dimensions - prefer getBoundingClientRect() for actual rendered size,
+            // since SVG attributes may be percentages or small viewBox units
+            const bbox = svgElement.getBoundingClientRect();
+            const attrWidth = parseFloat(svgClone.getAttribute("width"));
+            const attrHeight = parseFloat(svgClone.getAttribute("height"));
+            const rawAttr = svgClone.getAttribute("width") || "";
+            // Reject attribute values that are percentages or suspiciously small
+            const attrIsReliable = attrWidth > 10 && !rawAttr.includes("%");
+
+            let width = (bbox.width > 10 ? bbox.width : null)
+              || (attrIsReliable ? attrWidth : null)
+              || 400;
+            let height = (bbox.height > 10 ? bbox.height : null)
+              || (attrIsReliable ? attrHeight : null)
+              || 300;
 
             // Scale down if too wide
             if (width > maxWidth) {
@@ -432,14 +438,29 @@
                   // Convert data URL to base64
                   const base64Data = imageData.dataUrl.split(",")[1];
 
+                  // Scale image to fit DOCX page width (6.5 inches at 96 DPI = 624px)
+                  const maxDocxWidth = 624;
+                  let imgWidth = imageData.width;
+                  let imgHeight = imageData.height;
+                  if (imgWidth > maxDocxWidth) {
+                    const scale = maxDocxWidth / imgWidth;
+                    imgHeight = Math.round(imgHeight * scale);
+                    imgWidth = maxDocxWidth;
+                  } else if (imgWidth < maxDocxWidth * 0.5) {
+                    // Scale up small diagrams to at least 50% of page width
+                    const scale = (maxDocxWidth * 0.7) / imgWidth;
+                    imgHeight = Math.round(imgHeight * scale);
+                    imgWidth = Math.round(imgWidth * scale);
+                  }
+
                   // Create image for DOCX
                   const image = new docx.ImageRun({
                     data: Uint8Array.from(atob(base64Data), (c) =>
                       c.charCodeAt(0)
                     ),
                     transformation: {
-                      width: imageData.width,
-                      height: imageData.height,
+                      width: imgWidth,
+                      height: imgHeight,
                     },
                     type: "png",
                   });

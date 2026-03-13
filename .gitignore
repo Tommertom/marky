@@ -3,6 +3,9 @@
 
 node_modules/
 
+# SSL certificates
+certs/
+
 # Environment variables
 .env
 .env.local
@@ -28,3 +31,5 @@ yarn-error.log*
 .cache
 
 core
+
+certs

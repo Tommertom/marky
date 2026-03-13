@@ -14,16 +14,23 @@ exportBtn.addEventListener("click", async () => {
 
   try {
     // Fetch CSS and all split JS files in load order
-    const [cssRes, defaultContentRes, appRes, renderersRes, pdfRes, formatBarRes, htmlExportRes] =
-      await Promise.all([
-        fetch("/app.css"),
-        fetch("/default-content.js"),
-        fetch("/app.js"),
-        fetch("/renderers.js"),
-        fetch("/pdf-export.js"),
-        fetch("/format-bar.js"),
-        fetch("/html-export.js"),
-      ]);
+    const [
+      cssRes,
+      defaultContentRes,
+      appRes,
+      renderersRes,
+      pdfRes,
+      formatBarRes,
+      htmlExportRes,
+    ] = await Promise.all([
+      fetch("/app.css"),
+      fetch("/default-content.js"),
+      fetch("/app.js"),
+      fetch("/renderers.js"),
+      fetch("/pdf-export.js"),
+      fetch("/format-bar.js"),
+      fetch("/html-export.js"),
+    ]);
     cssContent = await cssRes.text();
     // Concatenate in correct dependency order: default-content first, then app.js (defines globals), then features
     jsContent = [
@@ -168,7 +175,7 @@ ${cssContent}
             </button>
         </div>
         
-        <div id="editor" contenteditable="true" spellcheck="true">
+        <div id="editor" contenteditable="true" spellcheck="true" data-exported="true">
             ${currentContent}
         </div>
     </div>

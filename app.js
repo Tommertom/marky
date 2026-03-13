@@ -172,6 +172,7 @@ editor.addEventListener("input", () => {
 window.addEventListener("load", () => {
   const saved = localStorage.getItem("markdownContent");
   const theme = localStorage.getItem("marky-theme");
+  const isExported = editor.hasAttribute("data-exported");
 
   // Check if saved content is essentially empty
   const savedTrimmed = saved ? saved.trim() : "";
@@ -182,7 +183,6 @@ window.addEventListener("load", () => {
     savedTrimmed === "<p></p>";
 
   // Check if current editor content is the default welcome message
-  // This helps distinguish between main app (should load default) vs exported HTML (keep embedded content)
   const currentContent = editor.innerHTML.trim();
   const isCurrentContentDefault =
     currentContent.includes("👋 Welcome to Marky") &&
@@ -192,55 +192,24 @@ window.addEventListener("load", () => {
     currentContent === "<p><br></p>" ||
     currentContent === "<p></p>";
 
-  // Debug logging in JSON format
-  const debugInfo = {
-    timestamp: new Date().toISOString(),
-    localStorage: {
-      markdownContent: {
-        exists: saved !== null,
-        isUndefined: saved === undefined,
-        value: saved,
-        length: saved ? saved.length : 0,
-        trimmed: savedTrimmed,
-        trimmedLength: savedTrimmed.length,
-        isEmptyContent: isEmptyContent,
-      },
-      theme: theme,
-      allKeys: Object.keys(localStorage),
-      storageSize: JSON.stringify(localStorage).length,
-    },
-    decision: {
-      hasSavedContent: !!saved && !isEmptyContent,
-      isCurrentContentDefault: isCurrentContentDefault,
-      isCurrentContentEmpty: isCurrentContentEmpty,
-      action: "determining...",
-    },
-    editorState: {
-      currentHTML: editor.innerHTML.substring(0, 100) + "...",
-      currentLength: editor.innerHTML.length,
-    },
-  };
-
-  console.log("=== MARKY LOAD DEBUG ===");
-  console.log(JSON.stringify(debugInfo, null, 2));
-
-  if (saved && !isEmptyContent) {
+  if (isExported) {
+    // Exported HTML file: keep the embedded content, ignore localStorage
+    editor.removeAttribute("data-exported");
+    console.log("✓ Keeping embedded content (exported HTML file)");
+  } else if (saved && !isEmptyContent) {
     // Load from localStorage if we have valid saved content
     editor.innerHTML = saved;
     console.log("✓ Loaded saved content from localStorage");
   } else if (isCurrentContentDefault || isCurrentContentEmpty) {
     // Only load default content if current content is the default or empty
-    // This preserves embedded content in exported HTML files
     editor.innerHTML = defaultContent;
     console.log("✓ Loaded default welcome content");
-    // Clean up the empty content from localStorage
     if (saved) {
       localStorage.removeItem("markdownContent");
       console.log("✓ Removed empty content from localStorage");
     }
   } else {
-    // Keep the current editor content (for exported HTML files with embedded content)
-    console.log("✓ Keeping existing editor content (exported HTML mode)");
+    console.log("✓ Keeping existing editor content");
   }
 
   (async () => {
