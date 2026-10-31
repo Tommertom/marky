@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "description": "Convert Markdown files to DOCX format using markdown-it",
   "main": "md-to-docx.js",
+  "bin": {
+    "marky-md-to-docx": "./server.js"
+  },
   "type": "module",
   "scripts": {
     "convert": "node md-to-docx.js",
-    "serve": "npx http-server -S -C certs/cert.pem -K certs/key.pem -p 8443 ."
+    "serve": "node server.js"
   },
   "dependencies": {
     "markdown-it": "^13.0.1",

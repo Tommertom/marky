@@ -1,0 +1,9 @@
+{
+  "id": 3,
+  "title": "Update README with local launch docs",
+  "plan": "Edit /home/tomgr/code/marky/README.md to document local usage of the app. Add a section (near the top, after the hosted launch link) covering: (1) the one-liner `npx marky-md-to-docx`, (2) what it does — starts a local server serving the app on http://localhost:3456 and prints the URL to click, (3) port 3456 is fixed and the command stays in the foreground, stop with Ctrl+C, (4) running it while a Marky server is live prints an 'already running' message, (5) notes: documents stay on the machine (browser localStorage auto-save), CDN-served libraries (mermaid, MathJax, docx, etc.) require internet, and usage is personal/offline-focused. Keep the rest of the README intact.",
+  "status": "done",
+  "prdId": 1,
+  "completedAt": "2026-10-31T14:47:59.038Z",
+  "notes": "2. Starts local server, prints clickable URL at http://localhost:3456\n3. Fixed port 3456, foreground command, stop with Ctrl+C\n4. \"Already running\" message when a server is live\n5. Notes: localStorage auto-save (local-only), CDN libraries (mermaid, MathJax, docx) need internet, personal/offline-focused\nRest of README untouched. Build: no build step exists in this vanilla-JS project (no `ng buil…"
+}

@@ -8,6 +8,24 @@ A powerful WYSIWYG markdown editor that runs entirely in your browser. No instal
 
 **[Launch Marky Editor](https://marky-md.web.app/)** - Start editing markdown instantly!
 
+### ▶️ Run Locally
+
+Prefer to run it on your own machine? One command is all it takes:
+
+```bash
+npx marky-md-to-docx
+```
+
+This starts a local server serving the app and prints the URL to click: **http://localhost:3456**. A few things to know:
+
+- **Port 3456 is fixed** - the server binds to `localhost:3456` (loopback only; nothing is exposed to your network).
+- **Stays in the foreground** - the command keeps running until you stop it with **Ctrl+C**.
+- **Already running?** - if a Marky server is already live on port 3456, starting another one prints an *"already running"* message instead of a second instance.
+- **Your documents stay on the machine** - everything is saved to your browser's localStorage (auto-saved every second), just like the hosted version. Nothing is uploaded anywhere.
+- **Internet required for some features** - certain libraries (Mermaid diagrams, MathJax/LaTeX, DOCX export, etc.) are served from CDNs, so those need an internet connection. The core editor works offline.
+
+Local usage is intended for personal, offline-focused workflows.
+
 ## ✨ What You Can Do
 
 ### 📋 Import Your Content

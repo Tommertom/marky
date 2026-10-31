@@ -1,0 +1,5 @@
+{
+  "id": 1,
+  "description": "I want this webapp to also run from an npx command, where it will spin up a local webserver server all parts locally, so I don't need to rely on the hosting on firebase",
+  "createdAt": "2026-10-31T14:30:12.984Z"
+}

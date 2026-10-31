@@ -1,0 +1,7 @@
+{
+  "id": 2,
+  "title": "Implement the marky-md-to-docx local server bin",
+  "plan": "Add a local-server mode to the existing npm package marky-md-to-docx. In package.json: add a \"bin\" entry mapping \"marky-md-to-docx\" to a new server script (e.g. server.js), and replace the current \"serve\" script (npx http-server with certs) to call the new server instead. Write server.js as a small dependency-free Node script using only node:http/node:fs/node:path: (1) serve all static files from the package directory (index.html, app.js, renderers.js, exports, css, favicon files, manifest.json, etc.) with correct MIME types; (2) bind to 127.0.0.1 (localhost only, privacy) on fixed port 3456, plain HTTP, no HTTPS; (3) print a clickable http://localhost:3456 URL on startup; (4) run in the foreground and exit cleanly (exit code 0, no output) on Ctrl+C; (5) on port-in-use (EADDRINUSE), probe the existing server with an HTTP GET and check the response for a Marky marker (e.g. the <title>Marky</title> or a meta tag): if it is Marky, print a friendly 'Marky is already running at http://localhost:3456' message and exit; if it is some other process, print a clear port-busy message mentioning the port; (6) keep the existing md-to-docx.js convert functionality working (main field and convert script unchanged). Test locally via `npx .` or `npm link` before considering done.",
+  "status": "open",
+  "prdId": 1"
+}

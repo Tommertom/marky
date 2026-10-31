@@ -1,0 +1,41 @@
+{
+  "id": 1,
+  "ideaId": 1,
+  "title": "Run Marky locally via npx — offline, private, no Firebase dependency",
+  "description": "I want this webapp to also run from an npx command, where it will spin up a local webserver server all parts locally, so I don't need to rely on the hosting on firebase",
+  "prd": {
+    "goal": "Add a local-server mode to Marky so the entire webapp can be launched with a single npx command, serving all app files from the local machine. Primary driver is privacy/offline: documents never leave the machine and the app works regardless of Firebase hosting availability. Also remove Firebase analytics entirely, from both the local and the hosted versions.",
+    "audience": "Only the developer himself. No flags, no CLI options, no hand-holding — the command must be dead simple to run. Local mode is personal-use only; the hosted version on Firebase remains for other visitors.",
+    "features": [
+      "Add a bin entry to the existing npm package 'marky-md-to-docx' so running `npx marky-md-to-docx` starts a local static file server on port 3456",
+      "Server prints a clickable URL (http://localhost:3456) for the user to click; runs in the foreground, stopped with Ctrl+C (no shutdown message/confirmation required)",
+      "If port 3456 is already serving Marky, print a friendly 'Marky is already running at <url>' message instead of failing with a raw port error",
+      "Plain HTTP, no HTTPS certs needed for localhost (browser treats localhost as a secure context, so clipboard/PWA APIs keep working)",
+      "Serve all app static files (index.html, app.js, renderers.js, exports, css, favicons, theme-manager, etc.) as-is; no rebundling or code changes required for the app itself",
+      "Feature parity with the hosted version: WYSIWYG editing, paste/upload import, auto-save to browser localStorage (persists on localhost:3456), MD/HTML/PDF/DOCX export, mermaid diagrams, LaTeX, themes, keyboard shortcuts — with no new local-only features (web only, no server-side file IO)",
+      "Leave CDN libraries (markdown-it, turndown, mermaid, MathJax, docx, FileSaver, html2pdf) as remote CDN includes — no vendoring",
+      "Remove Firebase analytics from the app: strip the Firebase SDK imports and analytics init from index.html for both the local and the hosted versions",
+      "Update the README with the local launch instructions: the npx one-liner, port, Ctrl+C behavior, and the already-running message"
+    ],
+    "constraints": [
+      "Keep the existing npm package name 'marky-md-to-docx' and its structure; add the server bin to it. Existing convert functionality (md-to-docx.js) must not break",
+      "Port 3456 is fixed (no flag to change it)",
+      "Single index.html serving both local and hosted modes; no analytics anywhere, so no build-time variant switching is needed beyond removing Firebase references",
+      "Requires Node.js/npm to run npx (acceptable — sole user is a developer)",
+      "Firebase hosting stays as the online deployment target; only the analytics dependency on it is removed",
+      "No timeline: build when the agent is triggered to build it; manual npm publish, no forced sync between hosted deploys and npm releases"
+    ],
+    "successCriteria": [
+      "Run `npx marky-md-to-docx` and a clickable http://localhost:3456 URL is printed",
+      "Clicking the URL opens the full Marky editor on localhost:3456",
+      "Auto-save to localStorage works across restarts on localhost:3456",
+      "All features work identically to hosted: editing, imports, exports (MD/HTML/PDF/DOCX), mermaid, LaTeX, themes, shortcuts",
+      "Running the command a second time while a Marky server is live prints a friendly 'already running' message",
+      "Ctrl+C exits the server cleanly with no output",
+      "Browser devtools show zero network calls to Firebase/gstatic and zero analytics traffic — neither locally nor on the hosted version",
+      "README documents the npx usage"
+    ],
+    "notes": "Analytics removal applies to the hosted version too, per explicit instruction — the hosted page and the local page become the same file. CDN libraries stay remote, so 'offline' for documents, not for the entire app. Version sync between Firebase and npm is manual and undemanding: publish to npm whenever, no automation."
+  },
+  "createdAt": "2026-10-31T14:41:41.000Z"
+}

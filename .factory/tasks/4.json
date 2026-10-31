@@ -1,0 +1,9 @@
+{
+  "id": 4,
+  "title": "Verify the deliverable meets all success criteria from PRD #1",
+  "plan": "Run an end-to-end validation against every success criterion in .factory/prds/1.json (features [6/6], constraints, successCriteria). Concretely: (1) run `npx marky-md-to-docx` (or `npm link`/`npx .` equivalent) and confirm a clickable http://localhost:3456 URL is printed; (2) click/open it and confirm the full Marky editor loads and works: typing, paste/upload import, MD/HTML/PDF/DOCX export, mermaid diagrams, LaTeX, theme toggle, keyboard shortcuts; (3) confirm auto-save persists to localStorage across browser sessions on localhost:3456; (4) run the command a second time while the server is live and confirm the friendly 'already running' message appears (and a non-Marky process on 3456 gets a proper port-busy message); (5) Ctrl+C exits cleanly with no output; (6) open devtools Network tab and confirm zero requests to *.gstatic.com or Firebase/analytics — both on the local server and on the hosted version (https://marky-md.web.app/); (7) confirm `marky-md-to-docx`'s existing convert functionality (npm run convert) still works and the README documents local usage. Report pass/fail per criterion.",
+  "status": "done",
+  "prdId": 1,
+  "completedAt": "2026-10-31T15:00:25.359Z",
+  "notes": "| 7 | Convert functionality intact | **PASS** | `npm run convert -- <in.md> <out.docx>` → valid 24 KB DOCX. README documents npx usage (one-liner, port 3456, Ctrl+C, already-running, localStorage, CDN caveat) |\n| 8 | README documents npx usage | **PASS** | \"▶️ Run Locally\" section covers all required points |\n**Also verified:** all static assets serve 200 (index.html, app.js, all export/render/…"
+}

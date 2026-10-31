@@ -1,0 +1,9 @@
+{
+  "id": 1,
+  "title": "Remove Firebase analytics from index.html",
+  "plan": "Edit /home/tomgr/code/marky/index.html to remove all Firebase references so a single shared app file works for both local and hosted modes with zero Firebase/gstatic calls. Specifically: (1) delete the two <script type=\"module\"> import lines loading firebase-app.js and firebase-analytics.js from www.gstatic.com, (2) remove the initializeApp/getAnalytics initialization code that uses them, (3) remove any other firebase.<...> calls (analytics event logging), (4) grep the whole repo for remaining references to firebase/gstatic.com/analytics and clean them up. Keep all Firebase *hosting* config (firebase.json, .firebaserc) untouched — hosting stays as the deploy target. Success check: loading the app makes zero network requests to *.gstatic.com and no console errors about initializeApp/getAnalytics; the hosted deployment (firebase deploy) serves the identical file.",
+  "status": "done",
+  "prdId": 1,
+  "completedAt": "2026-10-31T14:44:44.254Z",
+  "notes": "**Changes made:**\n- Removed from `/home/tomgr/code/marky/index.html`: the entire sandboxed `<script type=\"module\">` block — both `www.gstatic.com` imports (`firebase-app.js`, `firebase-analytics.js`), the `firebaseConfig`, and `initializeApp`/`getAnalytics` calls.\n- Grepped repo for remaining `firebase`/`gstatic`/`analytics`: zero hits in any app file (app.js, renderers.js, format-bar.js, etc.)…"
+}
